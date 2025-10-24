@@ -16,8 +16,8 @@
   button:hover {background:#5a0cac;}
   .section {margin-bottom:30px; border-bottom:1px solid #eee; padding-bottom:20px;}
   .item {margin-bottom:10px;}
-  .item input {width:80%;}
-  .remove-btn {background:red; margin-left:5px;}
+  .item input {width:80%; margin-right:5px;}
+  .remove-btn {background:red; margin-left:5px; padding:5px 10px;}
 </style>
 </head>
 <body>
@@ -25,7 +25,7 @@
 <header>Admin Panel - Buy Your Product</header>
 
 <main>
-  <!-- Site Name & Marquee -->
+  <!-- Site Settings -->
   <div class="section">
     <h2>Site Settings</h2>
     <label>Site Name:</label>
@@ -57,6 +57,13 @@
     <button id="addSocialBtn">Add Social Link</button>
   </div>
 
+  <!-- Orders / Notifications -->
+  <div class="section">
+    <h2>Latest Orders / Notifications (Show Last 5)</h2>
+    <div id="ordersContainer"></div>
+    <button id="addOrderBtn">Add Order</button>
+  </div>
+
   <button id="saveBtn">Save All Changes</button>
 </main>
 
@@ -82,9 +89,11 @@ const supportInput = document.getElementById('supportInput');
 const bannersContainer = document.getElementById('bannersContainer');
 const categoriesContainer = document.getElementById('categoriesContainer');
 const socialContainer = document.getElementById('socialContainer');
+const ordersContainer = document.getElementById('ordersContainer');
 const saveBtn = document.getElementById('saveBtn');
+const addOrderBtn = document.getElementById('addOrderBtn');
 
-// Load data from Firebase
+// Load data
 async function loadData() {
   const docRef = doc(db, "mainpage", "content");
   const docSnap = await getDoc(docRef);
@@ -94,86 +103,80 @@ async function loadData() {
     marqueeInput.value = data.marquee || '';
     supportInput.value = data.supportLink || '';
 
-    // Load Banners
-    bannersContainer.innerHTML = '';
-    data.banners.forEach((b,i)=>{ addBannerField(b.image,b.link); });
+    bannersContainer.innerHTML='';
+    data.banners.forEach(b=>addBannerField(b.image,b.link));
 
-    // Load Categories
-    categoriesContainer.innerHTML = '';
-    data.categories.forEach(c=>{ addCategoryField(c.name,c.image,c.link); });
+    categoriesContainer.innerHTML='';
+    data.categories.forEach(c=>addCategoryField(c.name,c.image,c.link));
 
-    // Load Social
-    socialContainer.innerHTML = '';
-    data.social.forEach(s=>{ addSocialField(s.icon,s.link); });
+    socialContainer.innerHTML='';
+    data.social.forEach(s=>addSocialField(s.icon,s.link));
+
+    ordersContainer.innerHTML='';
+    (data.orders || []).forEach(o=>addOrderField(o.product,o.price,o.time));
   }
 }
 
-// Banner functions
+// Banner
 function addBannerField(img='',link=''){
   const div = document.createElement('div'); div.classList.add('item');
-  div.innerHTML = `
-    <input type="text" placeholder="Banner Image URL" value="${img}">
-    <input type="text" placeholder="Banner Link" value="${link}">
-    <button class="remove-btn">Remove</button>
-  `;
-  div.querySelector('.remove-btn').addEventListener('click', ()=>{div.remove();});
+  div.innerHTML = `<input type="text" placeholder="Banner Image URL" value="${img}">
+                   <input type="text" placeholder="Banner Link" value="${link}">
+                   <button class="remove-btn">Remove</button>`;
+  div.querySelector('.remove-btn').addEventListener('click', ()=>div.remove());
   bannersContainer.appendChild(div);
 }
 document.getElementById('addBannerBtn').addEventListener('click', ()=>addBannerField());
 
-// Category functions
+// Category
 function addCategoryField(name='',img='',link=''){
   const div = document.createElement('div'); div.classList.add('item');
-  div.innerHTML = `
-    <input type="text" placeholder="Category Name" value="${name}">
-    <input type="text" placeholder="Image URL" value="${img}">
-    <input type="text" placeholder="Link" value="${link}">
-    <button class="remove-btn">Remove</button>
-  `;
-  div.querySelector('.remove-btn').addEventListener('click', ()=>{div.remove();});
+  div.innerHTML = `<input type="text" placeholder="Category Name" value="${name}">
+                   <input type="text" placeholder="Image URL" value="${img}">
+                   <input type="text" placeholder="Link" value="${link}">
+                   <button class="remove-btn">Remove</button>`;
+  div.querySelector('.remove-btn').addEventListener('click', ()=>div.remove());
   categoriesContainer.appendChild(div);
 }
 document.getElementById('addCategoryBtn').addEventListener('click', ()=>addCategoryField());
 
-// Social functions
+// Social
 function addSocialField(icon='',link=''){
   const div = document.createElement('div'); div.classList.add('item');
-  div.innerHTML = `
-    <input type="text" placeholder="Icon Class" value="${icon}">
-    <input type="text" placeholder="Link" value="${link}">
-    <button class="remove-btn">Remove</button>
-  `;
-  div.querySelector('.remove-btn').addEventListener('click', ()=>{div.remove();});
+  div.innerHTML = `<input type="text" placeholder="Icon Class" value="${icon}">
+                   <input type="text" placeholder="Link" value="${link}">
+                   <button class="remove-btn">Remove</button>`;
+  div.querySelector('.remove-btn').addEventListener('click', ()=>div.remove());
   socialContainer.appendChild(div);
 }
 document.getElementById('addSocialBtn').addEventListener('click', ()=>addSocialField());
 
-// Save data
+// Orders
+function addOrderField(product='',price='',time=''){
+  const div = document.createElement('div'); div.classList.add('item');
+  div.innerHTML = `<input type="text" placeholder="Product Name" value="${product}">
+                   <input type="text" placeholder="Price" value="${price}">
+                   <input type="text" placeholder="Time" value="${time}">
+                   <button class="remove-btn">Remove</button>`;
+  div.querySelector('.remove-btn').addEventListener('click', ()=>div.remove());
+  ordersContainer.appendChild(div);
+}
+addOrderBtn.addEventListener('click', ()=>addOrderField());
+
+// Save All
 saveBtn.addEventListener('click', async ()=>{
-  const banners = Array.from(bannersContainer.children).map(div=>({
-    image: div.children[0].value,
-    link: div.children[1].value
-  }));
-  const categories = Array.from(categoriesContainer.children).map(div=>({
-    name: div.children[0].value,
-    image: div.children[1].value,
-    link: div.children[2].value
-  }));
-  const social = Array.from(socialContainer.children).map(div=>({
-    icon: div.children[0].value,
-    link: div.children[1].value
-  }));
+  const banners = Array.from(bannersContainer.children).map(d=>({image:d.children[0].value,link:d.children[1].value}));
+  const categories = Array.from(categoriesContainer.children).map(d=>({name:d.children[0].value,image:d.children[1].value,link:d.children[2].value}));
+  const social = Array.from(socialContainer.children).map(d=>({icon:d.children[0].value,link:d.children[1].value}));
+  const orders = Array.from(ordersContainer.children).map(d=>({product:d.children[0].value,price:d.children[1].value,time:d.children[2].value}));
 
   await setDoc(doc(db,"mainpage","content"),{
     siteName: siteNameInput.value,
     marquee: marqueeInput.value,
     supportLink: supportInput.value,
-    banners,
-    categories,
-    social
+    banners, categories, social, orders
   });
-
-  alert("Data saved successfully!");
+  alert("All data saved successfully!");
 });
 
 loadData();
