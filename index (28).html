@@ -13,7 +13,7 @@
     /* Header */
     .header {display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background-color:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
     .header img.logo {height:40px;}
-    .header .website-name {font-size:24px; font-weight:bold; color:#6a0dad; font-family:'Orbitron', sans-serif; text-align:center; flex-grow:1;}
+    .header .website-name {font-size:24px; font-weight:bold; color:#6a0dad; font-family:'Orbitron',sans-serif; text-align:center; flex-grow:1;}
     .header .cart {display:flex; align-items:center;}
     .header .cart img {height:30px;}
     .header .cart span {background-color:#6a0dad; color:white; padding:5px 10px; border-radius:50%; margin-right:10px;}
@@ -41,6 +41,13 @@
     .category-box:hover {transform:scale(1.1); box-shadow:0 0 15px rgba(106,13,173,0.7);}
     .category-box::after {content:''; position:absolute; width:0; height:0; background:rgba(255,255,255,0.3); border-radius:50%; top:50%; left:50%; transform:translate(-50%,-50%); transition: width 0.4s,height 0.4s; pointer-events:none;}
     .category-box.clicked::after {width:150px; height:150px; opacity:0;}
+
+    /* Notifications & Latest Orders */
+    .notification-container {max-width:1200px; margin:20px auto; padding:10px; background:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+    .notification-container h3 {color:#6a0dad; margin-bottom:10px; text-align:center;}
+    .notification-list {list-style:none;}
+    .notification-list li {padding:8px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; font-size:14px; color:#333;}
+    .notification-list li span {font-weight:bold; color:#6a0dad;}
 
     /* Support */
     .support-btn {position:fixed; bottom:20px; right:20px; display:flex; align-items:center; text-decoration:none; z-index:9999;}
@@ -80,6 +87,14 @@
 <h2 class="section-title">HOT PRODUCTS AVAILABLE FOR YOU</h2>
 <div class="category-container" id="categoryContainer"></div>
 
+<!-- Notifications / Latest Orders -->
+<div class="notification-container">
+  <h3>Latest Orders / Notifications</h3>
+  <ul class="notification-list" id="notificationList">
+    <li>Loading...</li>
+  </ul>
+</div>
+
 <!-- Support -->
 <a href="#" class="support-btn" target="_blank" id="supportLink">
   <div class="support-text">SUPPORT!</div>
@@ -94,89 +109,108 @@
 
 <!-- Firebase SDK -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
-    authDomain: "test-30208.firebaseapp.com",
-    projectId: "test-30208",
-    storageBucket: "test-30208.appspot.com",
-    messagingSenderId: "511922448499",
-    appId: "1:511922448499:web:c3d192dc7ded1256282206"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+  authDomain: "test-30208.firebaseapp.com",
+  projectId: "test-30208",
+  storageBucket: "test-30208.appspot.com",
+  messagingSenderId: "511922448499",
+  appId: "1:511922448499:web:c3d192dc7ded1256282206"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  async function loadData() {
-    const docRef = doc(db, "mainpage", "content");
-    const docSnap = await getDoc(docRef);
-    if(docSnap.exists()){
-      const data = docSnap.data();
+async function loadData() {
+  const docRef = doc(db, "mainpage", "content");
+  const docSnap = await getDoc(docRef);
+  if(docSnap.exists()){
+    const data = docSnap.data();
 
-      // Marquee
-      document.getElementById("marqueeText").innerText = data.marquee;
+    // Marquee
+    document.getElementById("marqueeText").innerText = data.marquee;
 
-      // Site Name
-      document.getElementById("siteName").innerText = data.siteName;
+    // Site Name
+    document.getElementById("siteName").innerText = data.siteName;
 
-      // Support link
-      document.getElementById("supportLink").href = data.supportLink;
+    // Support link
+    document.getElementById("supportLink").href = data.supportLink;
 
-      // Banner
-      const wrapper = document.getElementById("bannerWrapper");
-      const dots = document.getElementById("bannerDots");
-      wrapper.innerHTML = '';
-      dots.innerHTML = '';
-      data.banners.forEach((b, i)=>{
-        const a = document.createElement('a');
-        a.href = b.link; a.classList.add('banner-slide'); a.target="_blank";
-        const img = document.createElement('img'); img.src=b.image; img.alt=b.alt;
-        a.appendChild(img); wrapper.appendChild(a);
-
-        const dot = document.createElement('span'); dot.classList.add('dot'); if(i===0) dot.classList.add('active');
-        dot.addEventListener('click', ()=>{ showBanner(i); });
-        dots.appendChild(dot);
-      });
-
-      // Categories
-      const categoryContainer = document.getElementById("categoryContainer");
-      categoryContainer.innerHTML = '';
-      data.categories.forEach(cat=>{
-        const a = document.createElement('a');
-        a.href = cat.link; a.classList.add('category-box'); a.target="_blank";
-        const img = document.createElement('img'); img.src=cat.image; img.alt=cat.name;
-        const h3 = document.createElement('h3'); h3.innerHTML = cat.name;
-        a.appendChild(img); a.appendChild(h3);
-        categoryContainer.appendChild(a);
-      });
-
-      // Social Links
-      const socialIcons = document.getElementById("socialIcons");
-      socialIcons.innerHTML='';
-      data.social.forEach(s=>{
-        const a = document.createElement('a'); a.href=s.link; a.classList.add('icon'); a.target="_blank";
-        a.innerHTML = `<i class="${s.icon}"></i>`;
-        socialIcons.appendChild(a);
-      });
-    }
-  }
-
-  loadData();
-
-  // Banner Slider
-  let currentIndex = 0;
-  function showBanner(index){
+    // Banner
     const wrapper = document.getElementById("bannerWrapper");
-    const dots = document.querySelectorAll('.dot');
-    const total = wrapper.children.length;
-    wrapper.style.transform = `translateX(-${index*100/total}%)`;
-    dots.forEach(d=>d.classList.remove('active')); dots[index].classList.add('active');
-    currentIndex=index;
-  }
-  setInterval(()=>{ currentIndex=(currentIndex+1)%document.getElementById("bannerWrapper").children.length; showBanner(currentIndex); },3000);
+    const dots = document.getElementById("bannerDots");
+    wrapper.innerHTML = '';
+    dots.innerHTML = '';
+    data.banners.forEach((b, i)=>{
+      const a = document.createElement('a');
+      a.href = b.link; a.classList.add('banner-slide'); a.target="_blank";
+      const img = document.createElement('img'); img.src=b.image; img.alt=b.alt;
+      a.appendChild(img); wrapper.appendChild(a);
 
+      const dot = document.createElement('span'); dot.classList.add('dot'); if(i===0) dot.classList.add('active');
+      dot.addEventListener('click', ()=>{ showBanner(i); });
+      dots.appendChild(dot);
+    });
+
+    // Categories
+    const categoryContainer = document.getElementById("categoryContainer");
+    categoryContainer.innerHTML = '';
+    data.categories.forEach(cat=>{
+      const a = document.createElement('a');
+      a.href = cat.link; a.classList.add('category-box'); a.target="_blank";
+      const img = document.createElement('img'); img.src=cat.image; img.alt=cat.name;
+      const h3 = document.createElement('h3'); h3.innerHTML = cat.name;
+      a.appendChild(img); a.appendChild(h3);
+      categoryContainer.appendChild(a);
+    });
+
+    // Social Links
+    const socialIcons = document.getElementById("socialIcons");
+    socialIcons.innerHTML='';
+    data.social.forEach(s=>{
+      const a = document.createElement('a'); a.href=s.link; a.classList.add('icon'); a.target="_blank";
+      a.innerHTML = `<i class="${s.icon}"></i>`;
+      socialIcons.appendChild(a);
+    });
+  }
+
+  // Load latest notifications/orders
+  const q = query(collection(db, "latestOrders"), orderBy("timestamp", "desc"), limit(5));
+  const querySnapshot = await getDocs(q);
+  const notificationList = document.getElementById("notificationList");
+  notificationList.innerHTML = '';
+  if(querySnapshot.empty){
+    notificationList.innerHTML = '<li>No latest orders yet</li>';
+  } else {
+    querySnapshot.forEach(doc => {
+      const order = doc.data();
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${order.product}</span> - $${order.price} | ${new Date(order.timestamp.seconds*1000).toLocaleString()}`;
+      notificationList.appendChild(li);
+    });
+  }
+}
+
+loadData();
+
+// Banner Slider
+let currentIndex = 0;
+function showBanner(index){
+  const wrapper = document.getElementById("bannerWrapper");
+  const dots = document.querySelectorAll('.dot');
+  const total = wrapper.children.length;
+  wrapper.style.transform = `translateX(-${index*100/total}%)`;
+  dots.forEach(d=>d.classList.remove('active')); dots[index].classList.add('active');
+  currentIndex=index;
+}
+setInterval(()=>{ 
+  currentIndex=(currentIndex+1)%document.getElementById("bannerWrapper").children.length; 
+  showBanner(currentIndex); 
+},3000);
 </script>
+
 </body>
 </html>
