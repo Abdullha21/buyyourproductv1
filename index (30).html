@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Panel — Products (No Password)</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#000;--card:#0f0f10;--accent:#ff2d2d;--muted:#999}
+  *{box-sizing:border-box}
+  body{margin:0; font-family:Arial, sans-serif; background:var(--bg); color:#fff; padding:18px;}
+  header{font-family:'Orbitron',sans-serif; color:var(--accent); font-size:26px; text-align:center; margin-bottom:16px}
+  .wrap{max-width:1100px; margin:0 auto}
+  .grid{display:grid; grid-template-columns:1fr 420px; gap:18px}
+  .card{background:var(--card); padding:14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+  label{display:block; font-size:14px; color:var(--muted); margin-top:8px}
+  input, textarea{width:100%; padding:10px; border-radius:8px; border:1px solid #222; background:#0b0b0b; color:#fff}
+  button{background:var(--accent); color:#fff; padding:10px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:700}
+  .small{font-size:13px; color:var(--muted)}
+  .list{margin-top:12px; max-height:520px; overflow:auto; padding-right:6px}
+  .item{display:flex; gap:12px; align-items:center; padding:10px; border-bottom:1px solid #111}
+  .item .info{flex:1}
+  .item .info .title{font-weight:700}
+  .item input{width:90px; padding:6px; border-radius:6px; background:#0b0b0b; border:1px solid #222}
+  .actions{display:flex; gap:8px}
+  .btn-danger{background:#cc0000}
+  .btn-grey{background:#222}
+  footer{text-align:center;color:#777;margin-top:18px}
+  @media(max-width:900px){ .grid{grid-template-columns:1fr; } .list{max-height:320px} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>Admin Panel — Products & Notice</header>
+
+    <div class="grid">
+      <!-- LEFT: products list -->
+      <div class="card">
+        <h3 style="margin:0 0 8px;color:var(--accent)">Products (Realtime)</h3>
+        <div class="small">Add / Edit / Delete your products. Changes saved to Firestore instantly.</div>
+
+        <div style="margin-top:12px;">
+          <strong>Add new product</strong>
+          <label>Product name</label>
+          <input id="inpName" placeholder="eg. 100 Diamond">
+          <label>Price (number)</label>
+          <input id="inpPrice" placeholder="eg. 50">
+          <label>Qty (optional)</label>
+          <input id="inpQty" placeholder="eg. 100">
+          <label>Payment Link (optional)</label>
+          <input id="inpLink" placeholder="https://... (if any)">
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button id="btnAdd">Add Product</button>
+            <button id="btnClear" class="btn-grey" style="background:#333">Clear</button>
+          </div>
+        </div>
+
+        <div class="list" id="productsList">
+          <!-- realtime items -->
+          <div class="small" style="padding:12px">Loading products…</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Notice editor + help -->
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <h3 style="margin:0 0 8px;color:var(--accent)">Notice Board</h3>
+          <div class="small">Update message that shows on main page.</div>
+          <label style="margin-top:10px">Notice text</label>
+          <textarea id="noticeInput" rows="6" placeholder="Write notice..."></textarea>
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button id="btnSaveNotice">Save Notice</button>
+            <button id="btnLoadNotice" class="btn-grey" style="background:#333">Load Current</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px;color:var(--accent)">Quick Help</h3>
+          <div class="small" style="line-height:1.6">
+            • Add products with name and price. Qty & paymentLink optional.<br>
+            • Edit price/qty/paymentLink inline and press Save next to item.<br>
+            • Delete to remove item.<br>
+            • Notice will be shown on main page from <code>mainpage/content.notice</code>.<br>
+            • Uses your existing Firebase project (config already in code).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>Developed by Abdullah | All Rights Reserved</footer>
+  </div>
+
+<script type="module">
+  // Firebase SDK imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, serverTimestamp,
+    onSnapshot, doc, updateDoc, deleteDoc, setDoc, getDoc, query, orderBy
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+  // ---------- YOUR FIREBASE CONFIG (you gave earlier) ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+    authDomain: "test-30208.firebaseapp.com",
+    projectId: "test-30208",
+    storageBucket: "test-30208.appspot.com",
+    messagingSenderId: "511922448499",
+    appId: "1:511922448499:web:c3d192dc7ded1256282206"
+  };
+
+  // init
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // UI elements
+  const inpName = document.getElementById('inpName');
+  const inpPrice = document.getElementById('inpPrice');
+  const inpQty = document.getElementById('inpQty');
+  const inpLink = document.getElementById('inpLink');
+  const btnAdd = document.getElementById('btnAdd');
+  const btnClear = document.getElementById('btnClear');
+  const productsList = document.getElementById('productsList');
+
+  const noticeInput = document.getElementById('noticeInput');
+  const btnSaveNotice = document.getElementById('btnSaveNotice');
+  const btnLoadNotice = document.getElementById('btnLoadNotice');
+
+  // Add product
+  btnAdd.addEventListener('click', async ()=>{
+    const name = inpName.value.trim();
+    const price = Number(inpPrice.value) || 0;
+    const qty = inpQty.value ? Number(inpQty.value) : null;
+    const paymentLink = inpLink.value.trim() || null;
+
+    if(!name){
+      alert('Enter product name');
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "products"), {
+        name, price, qty, paymentLink,
+        createdAt: serverTimestamp()
+      });
+      // clear fields
+      inpName.value=''; inpPrice.value=''; inpQty.value=''; inpLink.value='';
+      // simple feedback
+      btnAdd.textContent = 'Added ✓';
+      setTimeout(()=> btnAdd.textContent = 'Add Product', 900);
+    } catch(err){
+      console.error(err); alert('Error adding product');
+    }
+  });
+
+  btnClear.addEventListener('click', ()=>{ inpName.value=''; inpPrice.value=''; inpQty.value=''; inpLink.value=''; });
+
+  // Realtime products list (ordered by createdAt desc)
+  const q = query(collection(db, "products"), orderBy('createdAt','desc'));
+  onSnapshot(q, snapshot=>{
+    productsList.innerHTML = '';
+    if(snapshot.empty){
+      productsList.innerHTML = '<div class="small" style="padding:12px">No products yet.</div>';
+      return;
+    }
+    snapshot.forEach(docSnap=>{
+      const id = docSnap.id;
+      const data = docSnap.data();
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <div class="info">
+          <div class="title">${escapeHtml(data.name || '')}</div>
+          <div class="small">Price: <input data-id="${id}" data-field="price" value="${data.price ?? ''}">  Qty: <input data-id="${id}" data-field="qty" value="${data.qty ?? ''}"></div>
+          <div class="small">Link: <input data-id="${id}" data-field="paymentLink" value="${data.paymentLink ?? ''}" style="width:100%"></div>
+        </div>
+        <div class="actions">
+          <button data-action="save" data-id="${id}">Save</button>
+          <button data-action="del" data-id="${id}" class="btn-danger">Delete</button>
+        </div>
+      `;
+      productsList.appendChild(div);
+    });
+
+    // attach handlers
+    productsList.querySelectorAll('button[data-action="save"]').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const id = btn.getAttribute('data-id');
+        const priceInput = productsList.querySelector(`input[data-id="${id}"][data-field="price"]`);
+        const qtyInput = productsList.querySelector(`input[data-id="${id}"][data-field="qty"]`);
+        const linkInput = productsList.querySelector(`input[data-id="${id}"][data-field="paymentLink"]`);
+        const newPrice = Number(priceInput.value) || 0;
+        const newQty = qtyInput.value === '' ? null : Number(qtyInput.value);
+        const newLink = linkInput.value.trim() || null;
+        try{
+          await updateDoc(doc(db, "products", id), { price: newPrice, qty: newQty, paymentLink: newLink });
+          btn.textContent = 'Saved ✓';
+          setTimeout(()=> btn.textContent = 'Save',900);
+        }catch(err){ console.error(err); alert('Update failed'); }
+      };
+    });
+
+    productsList.querySelectorAll('button[data-action="del"]').forEach(btn=>{
+      btn.onclick = async ()=>{
+        const id = btn.getAttribute('data-id');
+        if(!confirm('Delete this product?')) return;
+        try{
+          await deleteDoc(doc(db, "products", id));
+        }catch(err){ console.error(err); alert('Delete failed'); }
+      };
+    });
+  });
+
+  // Notice: load and save
+  btnLoadNotice.addEventListener('click', async ()=>{
+    try{
+      const snap = await getDoc(doc(db, "mainpage", "content"));
+      if(snap.exists()){
+        noticeInput.value = snap.data().notice || '';
+        btnLoadNotice.textContent = 'Loaded ✓';
+        setTimeout(()=> btnLoadNotice.textContent = 'Load Current', 900);
+      }else{
+        noticeInput.value = '';
+        alert('No notice found yet.');
+      }
+    }catch(err){ console.error(err); alert('Cannot load notice'); }
+  });
+
+  btnSaveNotice.addEventListener('click', async ()=>{
+    const text = noticeInput.value.trim();
+    if(text === ''){ alert('Write notice first'); return; }
+    try{
+      await setDoc(doc(db, "mainpage", "content"), { notice: text, updatedAt: serverTimestamp() }, { merge: true });
+      btnSaveNotice.textContent = 'Saved ✓';
+      setTimeout(()=> btnSaveNotice.textContent = 'Save Notice', 900);
+    }catch(err){ console.error(err); alert('Save failed'); }
+  });
+
+  // helper escape
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+</script>
+</body>
+</html>
