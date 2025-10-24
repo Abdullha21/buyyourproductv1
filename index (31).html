@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Back Button Start -->
+  <style>
+    #back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #ff4d4d;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+      z-index: 999;
+    }
+    #back-button:hover {
+      background-color: #e60000;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    #back-button:active { transform: translateY(0); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+    .iframe-container {
+      width: 100%;
+      height: 500px;
+      margin: 15px 0;
+      display: none;
+      border-radius: 10px;
+      overflow: auto;
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      min-width: 100%;
+    }
+    #paymentFrame { width: 100%; height: 100%; border: none; min-width: 100%; }
+
+    @media (max-width: 600px) {
+      .iframe-container { height: 450px; overflow: auto; }
+    }
+  </style>
+
+  <button id="back-button" onclick="goBack()">← Back</button>
+
+  <script>
+    function goBack() {
+      window.location.href = "https://abdullha21.github.io/BUYYOURPRODUCT/index%20(4).html";
+    }
+  </script>
+  <!-- Back Button End -->
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UID Topup [BD SERVER]</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .container { max-width: 680px; margin: auto; background: #fff; padding: 20px; border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1); animation: slideIn 0.6s ease-out; transform: translateY(0); }
+    @keyframes slideIn { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    h2 { text-align: center; color: #333; animation: fadeIn 1s ease; }
+    .section { margin-bottom: 20px; opacity: 0; animation: fadeInUp 0.8s ease forwards; animation-delay: calc(0.1s * var(--index)); }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===== UPDATED PRODUCTS SECTION ===== */
+    .products {
+      display: flex;
+      flex-direction: column; /* vertical list */
+      align-items: center;    /* middle alignment */
+      justify-content: center;
+    }
+    .products button {
+      display: block;
+      width: 80%;              /* adjust button width */
+      margin: 6px 0;
+      padding: 12px;
+      background-color: #eee;
+      border: 2px solid transparent;
+      cursor: pointer;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;      /* text middle */
+      font-weight:700;
+    }
+    .products button::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:-100%;
+      width:100%;
+      height:100%;
+      background:linear-gradient(90deg,transparent, rgba(255,255,255,0.4), transparent);
+      transition:left .5s ease;
+    }
+    .products button:hover::before{ left:100% }
+    .products button:hover{ box-shadow:0 4px 10px rgba(0,0,0,0.15); transform:translateY(-3px) }
+    .products button.selected{ border-color: red; background-color: #ffe6e6; transform:scale(1.02) }
+
+    input[type="text"], select, input[type="email"] {
+      width: 100%; padding: 10px; margin: 5px 0; border: 2px solid #ddd; border-radius: 8px; transition: all .3s;
+    }
+    input:focus{ border-color:#B300B3; box-shadow:0 0 8px rgba(179,0,179,0.2); outline:none; transform:scale(1.01) }
+
+    .payment-methods img{ height:40px; cursor:pointer; margin-right:10px; border:2px solid transparent; padding:5px; border-radius:5px; transition: all .3s; }
+    .payment-methods img:hover{ transform:scale(1.1) rotate(3deg) }
+    .payment-methods img.selected{ border-color:red; transform:scale(1.05); box-shadow:0 0 10px rgba(255,0,0,0.3) }
+
+    .btn { background: linear-gradient(45deg, #8e2de2, #4a00e0); color: white; padding: 12px; border: none; width: 100%; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    .btn:disabled{ background:#ccc; cursor:not-allowed; }
+    .notice-box { background: #fff3cd; color: #856404; border:1px solid #ffeeba; padding:16px; border-radius:8px; margin-top:20px; font-size:16px; font-weight:500; animation: slideInRight .8s ease; }
+    .support-btn { position: fixed; bottom: 20px; right: 20px; display:flex; align-items:center; z-index:9999; }
+    .support-text, .support-icon{ background:#d60000; color:#fff; border-radius:5px; padding:10px 12px }
+    .support-icon { border-radius:50%; padding:13px 15px; margin-left:-1px }
+    #price-display{ margin-top:10px; font-weight:bold; color:#d60000; }
+
+    @media (max-width:720px){
+      .container{ padding:16px; }
+      .products button{ font-size:15px; padding:10px }
+      .iframe-container{ height:380px }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>UID Topup [BD SERVER]</h2>
+
+    <form id="topupForm" action="https://script.google.com/macros/s/AKfycbxew2hL-qyg_Mv1808ceg4bU7cmpv5sNH1dFGFlal9f7I_9wCxsdrbgOm5ktwS3a5aj1Q/exec" method="POST">
+      <div class="section" style="--index:1;">
+        <h3>1. Select Recharge</h3>
+        <div class="products" id="productList">
+          <div style="color:#888; font-size:14px">Loading products…</div>
+        </div>
+        <input type="hidden" name="selected_product" id="selected_product" required>
+      </div>
+
+      <div class="section" style="--index:2;">
+        <h3>2. Account Info</h3>
+        <input type="text" name="uid" placeholder="এখানে আপনার গেমের আইডি কোড লিখুন !" required>
+      </div>
+
+      <div class="section" style="--index:3;">
+        <h3>3. Order Confirm Notification Gmail</h3>
+        <input type="email" name="email" placeholder="এখানে আপনার জিমেইল লিখুন !" required>
+      </div>
+
+      <div class="section" style="--index:4;">
+        <h3>4. Select One Option</h3>
+        <div class="payment-methods">
+          <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.jpg" alt="bKash" id="bkashBtn">
+          <img src="https://uploads.onecompiler.io/42weeh2u8/43hsrp87q/download.png" alt="Nagad" id="nagadBtn">
+        </div>
+        <input type="hidden" name="payment_method" id="payment_method" required>
+        <div class="info-box" id="paymentInfo" style="display:none;"></div>
+      </div>
+
+      <div class="section" style="--index:5;">
+        <h3>5. Transaction ID</h3>
+        <input type="text" name="trx_id" value="আগে পেমেন্ট করে তারপর অর্ডার কনফার্ম বাটনে ক্লিক করবেন।" readonly required>
+      </div>
+
+      <div id="price-display"></div>
+
+      <div class="iframe-container" id="iframeContainer">
+        <iframe id="paymentFrame" sandbox="allow-forms allow-scripts allow-same-origin"></iframe>
+      </div>
+
+      <button type="button" class="btn" id="paymentBtn" disabled>Confirm Order</button>
+    </form>
+
+    <div class="notice-box">
+      <div class="notice-title">Free Fire Diamond TopUp</div>
+      <div id="noticeText">Loading notice...</div>
+    </div>
+
+    <a href="https://m.me/AbDuLlHa300" class="support-btn" target="_blank">
+      <div class="support-text">SUPPORT!</div>
+      <div class="support-icon">📞</div>
+    </a>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, doc, onSnapshot as onDocSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+      authDomain: "test-30208.firebaseapp.com",
+      projectId: "test-30208",
+      storageBucket: "test-30208.appspot.com",
+      messagingSenderId: "511922448499",
+      appId: "1:511922448499:web:c3d192dc7ded1256282206"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const productListEl = document.getElementById('productList');
+    const selectedProductInput = document.getElementById('selected_product');
+    const priceDisplay = document.getElementById('price-display');
+    const paymentBtn = document.getElementById('paymentBtn');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const paymentFrame = document.getElementById('paymentFrame');
+
+    const bkashBtn = document.getElementById('bkashBtn');
+    const nagadBtn = document.getElementById('nagadBtn');
+    const paymentMethod = document.getElementById('payment_method');
+    const paymentInfo = document.getElementById('paymentInfo');
+
+    let selectedPaymentLink = '';
+    let paymentCompleted = false;
+
+    const fallbackLinks = { "25 Diamond": "https://dash.zinipay.com/secure/payment-link/0c1d4470-4720-45b1-b18c-1e3f94674665" }; // simplified
+
+    const productsQuery = query(collection(db, "products"), orderBy("createdAt", "asc"));
+    onSnapshot(productsQuery, snapshot => {
+      productListEl.innerHTML = '';
+      if(snapshot.empty){
+        productListEl.innerHTML = '<div style="color:#888; font-size:14px">No products yet.</div>';
+        return;
+      }
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const name = data.name || 'Unnamed';
+        const price = data.price ?? 0;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.value = `${name} - ${price} TK`;
+        let plink = data.paymentLink || fallbackLinks[name] || '#';
+        btn.setAttribute('data-payment-link', plink);
+        btn.innerText = `${name} - ${price} TK`;
+        btn.addEventListener('click', () => {
+          productListEl.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedProductInput.value = btn.value;
+          selectedPaymentLink = plink;
+
+          if(plink && plink !== '#'){
+            iframeContainer.style.display = 'block';
+            paymentFrame.src = plink;
+            paymentBtn.textContent = 'Confirm Order';
+            paymentBtn.disabled = true;
+            paymentCompleted = false;
+          } else {
+            iframeContainer.style.display = 'none';
+            paymentFrame.src = '';
+            paymentBtn.disabled = true;
+            paymentBtn.textContent = 'Confirm Order';
+            paymentCompleted = false;
+          }
+
+          priceDisplay.textContent = `Price: ${price} TK`;
+          priceDisplay.style.color = '#d60000';
+        });
+
+        productListEl.appendChild(btn);
+      });
+    });
+
+    const noticeRef = doc(db, "mainpage", "content");
+    onDocSnapshot(noticeRef, docSnap => {
+      const noticeEl = document.getElementById('noticeText');
+      noticeEl.innerText = docSnap.exists()? docSnap.data().notice || 'No notice set.' : 'No notice set.';
+    });
+
+    bkashBtn.addEventListener('click', () => {
+      bkashBtn.classList.add('selected');
+      nagadBtn.classList.remove('selected');
+      paymentMethod.value = 'bKash';
+      paymentInfo.style.display = 'none';
+    });
+    nagadBtn.addEventListener('click', () => {
+      nagadBtn.classList.add('selected');
+      bkashBtn.classList.remove('selected');
+      paymentMethod.value = 'Nagad';
+      paymentInfo.style.display = 'none';
+    });
+
+    const form = document.getElementById('topupForm');
+    paymentBtn.addEventListener('click', function() {
+      if(!selectedPaymentLink || selectedPaymentLink === '#'){ alert('Please select a product with a payment link!'); return; }
+      const uid = form.querySelector('[name="uid"]').value;
+      const email = form.querySelector('[name="email"]').value;
+      const pm = paymentMethod.value;
+      if(!uid || !email || !pm){ alert('Please fill all required fields!'); return; }
+      if(!paymentCompleted){ window.open(selectedPaymentLink, '_blank'); priceDisplay.textContent = 'Please complete your payment in the new tab'; priceDisplay.style.color = '#d60000'; return; }
+      fetch(form.action, { method:'POST', body: new FormData(form) })
+      .then(()=> {
+        priceDisplay.textContent = 'Your order has been confirmed! You will receive confirmation soon.';
+        priceDisplay.style.color = 'green';
+        window.open('https://abdullha21.github.io/BUYYOURPRODUCT/index%20(6).html', '_blank');
+        form.reset();
+        iframeContainer.style.display = 'none';
+        paymentBtn.style.display = 'none';
+        productListEl.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+        bkashBtn.classList.remove('selected');
+        nagadBtn.classList.remove('selected');
+      }).catch(()=> alert('Error submitting form!'));
+    });
+
+    window.addEventListener('message', function(event){
+      if(event.data === 'payment_completed'){
+        paymentCompleted = true;
+        paymentBtn.disabled = false;
+        priceDisplay.textContent = 'Payment completed! Please confirm your order';
+        priceDisplay.style.color = 'green';
+      }
+    });
+  </script>
+</body>
+</html>
