@@ -1,242 +1,463 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Admin Panel — Products (No Password)</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{--bg:#000;--card:#0f0f10;--accent:#ff2d2d;--muted:#999}
-  *{box-sizing:border-box}
-  body{margin:0; font-family:Arial, sans-serif; background:var(--bg); color:#fff; padding:18px;}
-  header{font-family:'Orbitron',sans-serif; color:var(--accent); font-size:26px; text-align:center; margin-bottom:16px}
-  .wrap{max-width:1100px; margin:0 auto}
-  .grid{display:grid; grid-template-columns:1fr 420px; gap:18px}
-  .card{background:var(--card); padding:14px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-  label{display:block; font-size:14px; color:var(--muted); margin-top:8px}
-  input, textarea{width:100%; padding:10px; border-radius:8px; border:1px solid #222; background:#0b0b0b; color:#fff}
-  button{background:var(--accent); color:#fff; padding:10px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:700}
-  .small{font-size:13px; color:var(--muted)}
-  .list{margin-top:12px; max-height:520px; overflow:auto; padding-right:6px}
-  .item{display:flex; gap:12px; align-items:center; padding:10px; border-bottom:1px solid #111}
-  .item .info{flex:1}
-  .item .info .title{font-weight:700}
-  .item input{width:90px; padding:6px; border-radius:6px; background:#0b0b0b; border:1px solid #222}
-  .actions{display:flex; gap:8px}
-  .btn-danger{background:#cc0000}
-  .btn-grey{background:#222}
-  footer{text-align:center;color:#777;margin-top:18px}
-  @media(max-width:900px){ .grid{grid-template-columns:1fr; } .list{max-height:320px} }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - FF UID TOP UP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    .admin-container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .admin-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e74c3c;
+    }
+    
+    .admin-header h1 {
+      color: #2c3e50;
+      margin: 0;
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 32px;
+    }
+    
+    .admin-header p {
+      color: #666;
+      margin: 10px 0 0 0;
+      font-size: 16px;
+    }
+    
+    .back-btn {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+    
+    .admin-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .admin-tab {
+      padding: 15px 24px;
+      background-color: #f1f1f1;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      transition: all 0.3s ease;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .admin-tab.active {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+    }
+    
+    .admin-tab:hover:not(.active) {
+      background-color: #e0e0e0;
+    }
+    
+    .admin-section {
+      display: none;
+      padding: 25px 0;
+    }
+    
+    .admin-section.active {
+      display: block;
+    }
+    
+    .admin-input {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 2px solid #bdc3c7;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .admin-input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+      outline: none;
+    }
+    
+    .admin-btn {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      margin: 8px;
+      font-weight: bold;
+    }
+    
+    .admin-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+    
+    .admin-btn.delete {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+    
+    .admin-btn.delete:hover {
+      background: linear-gradient(45deg, #c0392b, #a93226);
+    }
+    
+    .product-item {
+      border: 2px solid #ecf0f1;
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 10px;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+    }
+    
+    .product-item:hover {
+      border-color: #3498db;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .login-section {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    
+    .login-input {
+      width: 100%;
+      max-width: 350px;
+      padding: 15px;
+      margin: 15px auto;
+      border: 2px solid #bdc3c7;
+      border-radius: 8px;
+      box-sizing: border-box;
+      display: block;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .login-input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+    }
+    
+    .login-btn {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 15px 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      margin-top: 15px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    }
+    
+    .status-message {
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    .status-success {
+      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+      color: #155724;
+      border: 2px solid #c3e6cb;
+    }
+    
+    .status-error {
+      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+      color: #721c24;
+      border: 2px solid #f5c6cb;
+    }
+    
+    .collection-info {
+      background: linear-gradient(135deg, #e7f3ff, #d6eaf8);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 14px;
+      color: #2c3e50;
+      border-left: 4px solid #3498db;
+    }
+    
+    .form-group {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      border: 2px solid #ecf0f1;
+    }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="wrap">
-    <header>Admin Panel — Products & Notice</header>
+    <div class="admin-header">
+      <h1>🎮 FF UID TOP UP Admin Panel</h1>
+      <p>Manage Free Fire top up products and notices</p>
+    </div>
 
-    <div class="grid">
-      <!-- LEFT: products list -->
-      <div class="card">
-        <h3 style="margin:0 0 8px;color:var(--accent)">Products (Realtime)</h3>
-        <div class="small">Add / Edit / Delete your products. Changes saved to Firestore instantly.</div>
-
-        <div style="margin-top:12px;">
-          <strong>Add new product</strong>
-          <label>Product name</label>
-          <input id="inpName" placeholder="eg. 100 Diamond">
-          <label>Price (number)</label>
-          <input id="inpPrice" placeholder="eg. 50">
-          <label>Qty (optional)</label>
-          <input id="inpQty" placeholder="eg. 100">
-          <label>Payment Link (optional)</label>
-          <input id="inpLink" placeholder="https://... (if any)">
-          <div style="margin-top:10px; display:flex; gap:8px;">
-            <button id="btnAdd">Add Product</button>
-            <button id="btnClear" class="btn-grey" style="background:#333">Clear</button>
-          </div>
-        </div>
-
-        <div class="list" id="productsList">
-          <!-- realtime items -->
-          <div class="small" style="padding:12px">Loading products…</div>
-        </div>
-      </div>
-
-      <!-- RIGHT: Notice editor + help -->
-      <div>
-        <div class="card" style="margin-bottom:12px;">
-          <h3 style="margin:0 0 8px;color:var(--accent)">Notice Board</h3>
-          <div class="small">Update message that shows on main page.</div>
-          <label style="margin-top:10px">Notice text</label>
-          <textarea id="noticeInput" rows="6" placeholder="Write notice..."></textarea>
-          <div style="margin-top:10px; display:flex; gap:8px;">
-            <button id="btnSaveNotice">Save Notice</button>
-            <button id="btnLoadNotice" class="btn-grey" style="background:#333">Load Current</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 style="margin:0 0 8px;color:var(--accent)">Quick Help</h3>
-          <div class="small" style="line-height:1.6">
-            • Add products with name and price. Qty & paymentLink optional.<br>
-            • Edit price/qty/paymentLink inline and press Save next to item.<br>
-            • Delete to remove item.<br>
-            • Notice will be shown on main page from <code>mainpage/content.notice</code>.<br>
-            • Uses your existing Firebase project (config already in code).
-          </div>
-        </div>
+    <div id="loginSection">
+      <div class="login-section">
+        <h2 style="color: #2c3e50; margin-bottom: 30px;">Admin Login</h2>
+        <input type="password" id="adminPassword" class="login-input" placeholder="Enter Admin Password">
+        <button class="login-btn" onclick="adminLogin()">🚀 Login</button>
+        <div id="loginMessage" class="status-message" style="display: none;"></div>
       </div>
     </div>
 
-    <footer>Developed by Abdullah | All Rights Reserved</footer>
+    <div id="adminSection" style="display: none;">
+      <div class="collection-info">
+        <strong>📁 Collection Info:</strong> This admin panel manages ONLY Free Fire UID Top Up products (Collection: ff_uid_topup_products)
+      </div>
+      
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchTab('productsSection')">🎯 Products Management</button>
+        <button class="admin-tab" onclick="switchTab('noticesSection')">📢 Notices Management</button>
+      </div>
+
+      <div id="productsSection" class="admin-section active">
+        <div class="form-group">
+          <h3 style="color: #2c3e50; margin-bottom: 20px;">➕ Add New Free Fire Top Up Product</h3>
+          <input type="text" id="productName" class="admin-input" placeholder="Product Name (e.g., 100 Diamonds - 150 TK)">
+          <input type="text" id="paymentLink" class="admin-input" placeholder="Payment Link">
+          <button class="admin-btn" onclick="addProduct()">🎮 Add Product</button>
+        </div>
+        
+        <h3 style="color: #2c3e50; margin-bottom: 20px;">📋 Current Free Fire Top Up Products</h3>
+        <div id="productsList">
+          <!-- Products will be listed here -->
+        </div>
+      </div>
+
+      <div id="noticesSection" class="admin-section">
+        <div class="form-group">
+          <h3 style="color: #2c3e50; margin-bottom: 20px;">📝 Update Free Fire Top Up Notice</h3>
+          <input type="text" id="noticeTitleInput" class="admin-input" placeholder="Notice Title (e.g., Free Fire Top Up Notice)">
+          <textarea id="noticeContentInput" class="admin-input" placeholder="Notice Content" rows="6"></textarea>
+          <button class="admin-btn" onclick="updateNotice()">📢 Update Notice</button>
+        </div>
+        
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+      </div>
+    </div>
   </div>
 
-<script type="module">
-  // Firebase SDK imports
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import {
-    getFirestore, collection, addDoc, serverTimestamp,
-    onSnapshot, doc, updateDoc, deleteDoc, setDoc, getDoc, query, orderBy
-  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+      authDomain: "test-30208.firebaseapp.com",
+      projectId: "test-30208",
+      storageBucket: "test-30208.firebasestorage.app",
+      messagingSenderId: "511922448499",
+      appId: "1:511922448499:web:c3d192dc7ded1256282206"
+    };
 
-  // ---------- YOUR FIREBASE CONFIG (you gave earlier) ----------
-  const firebaseConfig = {
-    apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
-    authDomain: "test-30208.firebaseapp.com",
-    projectId: "test-30208",
-    storageBucket: "test-30208.appspot.com",
-    messagingSenderId: "511922448499",
-    appId: "1:511922448499:web:c3d192dc7ded1256282206"
-  };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  // init
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // UI elements
-  const inpName = document.getElementById('inpName');
-  const inpPrice = document.getElementById('inpPrice');
-  const inpQty = document.getElementById('inpQty');
-  const inpLink = document.getElementById('inpLink');
-  const btnAdd = document.getElementById('btnAdd');
-  const btnClear = document.getElementById('btnClear');
-  const productsList = document.getElementById('productsList');
-
-  const noticeInput = document.getElementById('noticeInput');
-  const btnSaveNotice = document.getElementById('btnSaveNotice');
-  const btnLoadNotice = document.getElementById('btnLoadNotice');
-
-  // Add product
-  btnAdd.addEventListener('click', async ()=>{
-    const name = inpName.value.trim();
-    const price = Number(inpPrice.value) || 0;
-    const qty = inpQty.value ? Number(inpQty.value) : null;
-    const paymentLink = inpLink.value.trim() || null;
-
-    if(!name){
-      alert('Enter product name');
-      return;
+    function goToMain() {
+      window.location.href = "ff-uid-topup.html";
     }
 
-    try {
-      await addDoc(collection(db, "products"), {
-        name, price, qty, paymentLink,
-        createdAt: serverTimestamp()
+    function switchTab(tabName) {
+      document.querySelectorAll('.admin-section').forEach(section => {
+        section.classList.remove('active');
       });
-      // clear fields
-      inpName.value=''; inpPrice.value=''; inpQty.value=''; inpLink.value='';
-      // simple feedback
-      btnAdd.textContent = 'Added ✓';
-      setTimeout(()=> btnAdd.textContent = 'Add Product', 900);
-    } catch(err){
-      console.error(err); alert('Error adding product');
+      document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.getElementById(tabName).classList.add('active');
+      event.target.classList.add('active');
     }
-  });
 
-  btnClear.addEventListener('click', ()=>{ inpName.value=''; inpPrice.value=''; inpQty.value=''; inpLink.value=''; });
-
-  // Realtime products list (ordered by createdAt desc)
-  const q = query(collection(db, "products"), orderBy('createdAt','desc'));
-  onSnapshot(q, snapshot=>{
-    productsList.innerHTML = '';
-    if(snapshot.empty){
-      productsList.innerHTML = '<div class="small" style="padding:12px">No products yet.</div>';
-      return;
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.textContent = message;
+      statusDiv.className = `status-message status-${type}`;
+      statusDiv.style.display = 'block';
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 4000);
     }
-    snapshot.forEach(docSnap=>{
-      const id = docSnap.id;
-      const data = docSnap.data();
-      const div = document.createElement('div');
-      div.className = 'item';
-      div.innerHTML = `
-        <div class="info">
-          <div class="title">${escapeHtml(data.name || '')}</div>
-          <div class="small">Price: <input data-id="${id}" data-field="price" value="${data.price ?? ''}">  Qty: <input data-id="${id}" data-field="qty" value="${data.qty ?? ''}"></div>
-          <div class="small">Link: <input data-id="${id}" data-field="paymentLink" value="${data.paymentLink ?? ''}" style="width:100%"></div>
-        </div>
-        <div class="actions">
-          <button data-action="save" data-id="${id}">Save</button>
-          <button data-action="del" data-id="${id}" class="btn-danger">Delete</button>
-        </div>
-      `;
-      productsList.appendChild(div);
-    });
 
-    // attach handlers
-    productsList.querySelectorAll('button[data-action="save"]').forEach(btn=>{
-      btn.onclick = async ()=>{
-        const id = btn.getAttribute('data-id');
-        const priceInput = productsList.querySelector(`input[data-id="${id}"][data-field="price"]`);
-        const qtyInput = productsList.querySelector(`input[data-id="${id}"][data-field="qty"]`);
-        const linkInput = productsList.querySelector(`input[data-id="${id}"][data-field="paymentLink"]`);
-        const newPrice = Number(priceInput.value) || 0;
-        const newQty = qtyInput.value === '' ? null : Number(qtyInput.value);
-        const newLink = linkInput.value.trim() || null;
-        try{
-          await updateDoc(doc(db, "products", id), { price: newPrice, qty: newQty, paymentLink: newLink });
-          btn.textContent = 'Saved ✓';
-          setTimeout(()=> btn.textContent = 'Save',900);
-        }catch(err){ console.error(err); alert('Update failed'); }
-      };
-    });
+    function showLoginMessage(message, type) {
+      const messageDiv = document.getElementById('loginMessage');
+      messageDiv.textContent = message;
+      messageDiv.className = `status-message status-${type}`;
+      messageDiv.style.display = 'block';
+    }
 
-    productsList.querySelectorAll('button[data-action="del"]').forEach(btn=>{
-      btn.onclick = async ()=>{
-        const id = btn.getAttribute('data-id');
-        if(!confirm('Delete this product?')) return;
-        try{
-          await deleteDoc(doc(db, "products", id));
-        }catch(err){ console.error(err); alert('Delete failed'); }
-      };
-    });
-  });
-
-  // Notice: load and save
-  btnLoadNotice.addEventListener('click', async ()=>{
-    try{
-      const snap = await getDoc(doc(db, "mainpage", "content"));
-      if(snap.exists()){
-        noticeInput.value = snap.data().notice || '';
-        btnLoadNotice.textContent = 'Loaded ✓';
-        setTimeout(()=> btnLoadNotice.textContent = 'Load Current', 900);
-      }else{
-        noticeInput.value = '';
-        alert('No notice found yet.');
+    function adminLogin() {
+      const password = document.getElementById('adminPassword').value;
+      if (password === '76843') {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('adminSection').style.display = 'block';
+        loadAdminProducts();
+        loadCurrentNotice();
+        showLoginMessage('✅ Login successful! Welcome to FF UID TOP UP Admin Panel', 'success');
+      } else {
+        showLoginMessage('❌ Wrong password! Please try again.', 'error');
       }
-    }catch(err){ console.error(err); alert('Cannot load notice'); }
-  });
+    }
 
-  btnSaveNotice.addEventListener('click', async ()=>{
-    const text = noticeInput.value.trim();
-    if(text === ''){ alert('Write notice first'); return; }
-    try{
-      await setDoc(doc(db, "mainpage", "content"), { notice: text, updatedAt: serverTimestamp() }, { merge: true });
-      btnSaveNotice.textContent = 'Saved ✓';
-      setTimeout(()=> btnSaveNotice.textContent = 'Save Notice', 900);
-    }catch(err){ console.error(err); alert('Save failed'); }
-  });
+    function loadAdminProducts() {
+      db.collection('ff_uid_topup_products').orderBy('name').onSnapshot(snapshot => {
+        const productsList = document.getElementById('productsList');
+        productsList.innerHTML = '';
+        
+        if (snapshot.empty) {
+          productsList.innerHTML = `
+            <div style="text-align: center; color: #666; padding: 40px; background: #f8f9fa; border-radius: 10px; border: 2px dashed #bdc3c7;">
+              <h3 style="color: #e74c3c;">🎮 No Free Fire Top Up Products Found</h3>
+              <p>Add your first Free Fire top up product using the form above.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        snapshot.forEach(doc => {
+          const product = doc.data();
+          const div = document.createElement('div');
+          div.className = 'product-item';
+          div.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+              <div>
+                <strong style="color: #2c3e50; font-size: 18px;">${product.name}</strong>
+                <div style="color: #666; margin-top: 5px; font-size: 14px;">
+                  <strong>🔗 Payment Link:</strong> ${product.paymentLink}
+                </div>
+                <div style="color: #999; margin-top: 5px; font-size: 12px;">
+                  <strong>📅 Created:</strong> ${product.createdAt ? new Date(product.createdAt.seconds * 1000).toLocaleString() : 'N/A'}
+                </div>
+              </div>
+              <button class="admin-btn delete" onclick="deleteProduct('${doc.id}')" style="padding: 10px 20px; font-size: 14px;">🗑️ Delete</button>
+            </div>
+          `;
+          productsList.appendChild(div);
+        });
+      });
+    }
 
-  // helper escape
-  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
-</script>
+    function loadCurrentNotice() {
+      db.collection('ff_uid_topup_notices').doc('current').get().then(doc => {
+        if (doc.exists) {
+          const notice = doc.data();
+          document.getElementById('noticeTitleInput').value = notice.title || '';
+          document.getElementById('noticeContentInput').value = notice.content || '';
+        }
+      });
+    }
+
+    function addProduct() {
+      const name = document.getElementById('productName').value;
+      const paymentLink = document.getElementById('paymentLink').value;
+      
+      if (!name || !paymentLink) {
+        showStatus('❌ Please fill all fields!', 'error');
+        return;
+      }
+      
+      db.collection('ff_uid_topup_products').add({
+        name: name,
+        paymentLink: paymentLink,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        document.getElementById('productName').value = '';
+        document.getElementById('paymentLink').value = '';
+        showStatus('✅ Free Fire top up product added successfully!', 'success');
+      }).catch(error => {
+        showStatus('❌ Error adding product: ' + error.message, 'error');
+      });
+    }
+
+    function deleteProduct(id) {
+      if (confirm('Are you sure you want to delete this Free Fire top up product?')) {
+        db.collection('ff_uid_topup_products').doc(id).delete()
+          .then(() => {
+            showStatus('✅ Free Fire top up product deleted successfully!', 'success');
+          })
+          .catch(error => {
+            showStatus('❌ Error deleting product: ' + error.message, 'error');
+          });
+      }
+    }
+
+    function updateNotice() {
+      const title = document.getElementById('noticeTitleInput').value;
+      const content = document.getElementById('noticeContentInput').value;
+      
+      if (!title || !content) {
+        showStatus('❌ Please fill all fields!', 'error');
+        return;
+      }
+      
+      db.collection('ff_uid_topup_notices').doc('current').set({
+        title: title,
+        content: content,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        showStatus('✅ Free Fire top up notice updated successfully!', 'success');
+      }).catch(error => {
+        showStatus('❌ Error updating notice: ' + error.message, 'error');
+      });
+    }
+
+    document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        adminLogin();
+      }
+    });
+  </script>
 </body>
 </html>
