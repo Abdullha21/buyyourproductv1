@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - All Important Tools</title>
-    <!-- Firebase SDK -->
+    <title>Admin Panel - Tools Manager</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <style>
@@ -16,211 +15,324 @@
 
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1e3a8a, #3730a3);
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 30px;
         }
 
         /* Header */
         .header {
             text-align: center;
             margin-bottom: 30px;
+            padding: 20px;
         }
 
         .header h1 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin-bottom: 10px;
         }
 
-        /* Back Button */
-        .back-btn {
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .nav-btn {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border-radius: 25px;
             cursor: pointer;
-            margin-bottom: 20px;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
-        /* Login Section */
-        .login-section {
-            text-align: center;
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Form Section */
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
             padding: 30px;
-            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-section h2 {
             margin-bottom: 20px;
-        }
-
-        .login-input {
-            padding: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            width: 200px;
-            margin-right: 10px;
-        }
-
-        .login-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .error-msg {
-            color: #ef4444;
-            margin-top: 10px;
-            display: none;
-        }
-
-        /* Admin Section */
-        .admin-section {
-            display: none;
-        }
-
-        /* Add Tool Form */
-        .add-form {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            text-align: center;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .form-input {
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 15px;
+            border: none;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
         }
 
-        .add-btn {
-            background: #10b981;
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .submit-btn {
+            background: #27ae60;
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 15px 30px;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 16px;
             font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #219a52;
+            transform: translateY(-2px);
         }
 
         /* Tools List */
         .tools-list {
             background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
+            padding: 30px;
             border-radius: 15px;
+            backdrop-filter: blur(10px);
         }
 
-        .tool-item {
+        .tools-list h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .tool-card {
             background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
 
-        .tool-info h3 {
+        .tool-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .tool-preview img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+
+        .tool-preview .icon {
+            font-size: 1.8rem;
+        }
+
+        .tool-info {
+            flex: 1;
+        }
+
+        .tool-name {
+            font-weight: bold;
             margin-bottom: 5px;
+            font-size: 1.1rem;
         }
 
-        .tool-info p {
+        .tool-url {
             font-size: 0.9rem;
             opacity: 0.8;
+            word-break: break-all;
+        }
+
+        .tool-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .delete-btn {
-            background: #ef4444;
+            background: #e74c3c;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 12px;
         }
 
-        .status-msg {
-            padding: 10px;
+        .edit-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 8px 12px;
             border-radius: 5px;
-            margin: 10px 0;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             text-align: center;
-            display: none;
+            font-weight: 600;
         }
 
         .success {
-            background: rgba(16, 185, 129, 0.3);
-            color: #10b981;
+            background: rgba(39, 174, 96, 0.3);
+            border: 1px solid #27ae60;
         }
 
         .error {
-            background: rgba(239, 68, 68, 0.3);
-            color: #ef4444;
+            background: rgba(231, 76, 60, 0.3);
+            border: 1px solid #e74c3c;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .tool-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .tool-actions {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Back Button -->
-        <button class="back-btn" onclick="goBack()">← Back to Tools</button>
-
         <!-- Header -->
         <div class="header">
-            <h1>🔧 Tools Admin Panel</h1>
-            <p>Manage your important tools</p>
+            <h1>⚙️ Admin Panel</h1>
+            <p>Manage your tools collection</p>
         </div>
 
-        <!-- Login Section -->
-        <div id="loginSection" class="login-section">
-            <h2>Admin Login</h2>
-            <input type="password" id="passwordInput" class="login-input" placeholder="Enter password">
-            <button class="login-btn" onclick="login()">Login</button>
-            <div id="errorMsg" class="error-msg">Wrong password!</div>
+        <!-- Navigation -->
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="goToMain()">← Back to Main</button>
+            <button class="nav-btn" onclick="showAddForm()">Add New Tool</button>
+            <button class="nav-btn" onclick="refreshTools()">Refresh List</button>
         </div>
 
-        <!-- Admin Section -->
-        <div id="adminSection" class="admin-section">
-            <!-- Add Tool Form -->
-            <div class="add-form">
-                <h2>Add New Tool</h2>
+        <!-- Messages -->
+        <div id="messageArea"></div>
+
+        <!-- Add/Edit Form -->
+        <div class="form-section" id="formSection">
+            <h2 id="formTitle">Add New Tool</h2>
+            <form id="toolForm">
                 <div class="form-group">
-                    <input type="text" id="toolName" class="form-input" placeholder="Tool Name">
-                    <input type="text" id="toolUrl" class="form-input" placeholder="Tool URL">
-                    <input type="text" id="toolIcon" class="form-input" placeholder="Tool Icon (e.g., 🔧)">
+                    <label for="toolName">Tool Name *</label>
+                    <input type="text" id="toolName" required placeholder="Enter tool name">
                 </div>
-                <button class="add-btn" onclick="addTool()">Add Tool</button>
-            </div>
 
-            <!-- Tools List -->
-            <div class="tools-list">
-                <h2>Current Tools</h2>
-                <div id="toolsList">
-                    <!-- Tools will be listed here -->
+                <div class="form-group">
+                    <label for="toolUrl">Tool URL *</label>
+                    <input type="url" id="toolUrl" required placeholder="https://example.com">
                 </div>
-            </div>
 
-            <!-- Status Message -->
-            <div id="statusMsg" class="status-msg"></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="iconType">Display Type</label>
+                        <select id="iconType" onchange="toggleImageInput()">
+                            <option value="icon">Emoji Icon</option>
+                            <option value="image">Image URL</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="iconInputGroup">
+                        <label for="toolIcon">Emoji Icon</label>
+                        <input type="text" id="toolIcon" placeholder="🔧" maxlength="2">
+                    </div>
+
+                    <div class="form-group" id="imageInputGroup" style="display: none;">
+                        <label for="toolImage">Image URL</label>
+                        <input type="url" id="toolImage" placeholder="https://example.com/image.png">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="toolDescription">Description (Optional)</label>
+                    <input type="text" id="toolDescription" placeholder="Short description">
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Add Tool</button>
+            </form>
+        </div>
+
+        <!-- Tools List -->
+        <div class="tools-list">
+            <h2>Existing Tools</h2>
+            <div class="tools-grid" id="toolsGrid">
+                <!-- Tools will be loaded here -->
+            </div>
         </div>
     </div>
 
@@ -236,117 +348,215 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const db = firebase.firestore();
 
-        // Admin Password
-        const ADMIN_PASSWORD = "76843";
-
         // DOM Elements
-        const loginSection = document.getElementById('loginSection');
-        const adminSection = document.getElementById('adminSection');
-        const passwordInput = document.getElementById('passwordInput');
-        const errorMsg = document.getElementById('errorMsg');
-        const statusMsg = document.getElementById('statusMsg');
-        const toolsList = document.getElementById('toolsList');
+        const toolForm = document.getElementById('toolForm');
+        const toolsGrid = document.getElementById('toolsGrid');
+        const messageArea = document.getElementById('messageArea');
+        let editingToolId = null;
 
-        // Login Function
-        function login() {
-            if (passwordInput.value === ADMIN_PASSWORD) {
-                loginSection.style.display = 'none';
-                adminSection.style.display = 'block';
-                loadTools();
+        // Toggle between icon and image input
+        function toggleImageInput() {
+            const iconType = document.getElementById('iconType').value;
+            const iconInputGroup = document.getElementById('iconInputGroup');
+            const imageInputGroup = document.getElementById('imageInputGroup');
+
+            if (iconType === 'image') {
+                iconInputGroup.style.display = 'none';
+                imageInputGroup.style.display = 'block';
             } else {
-                errorMsg.style.display = 'block';
+                iconInputGroup.style.display = 'block';
+                imageInputGroup.style.display = 'none';
             }
         }
 
-        // Load Tools
-        function loadTools() {
-            db.collection('important_tools').orderBy('name').onSnapshot(snapshot => {
-                toolsList.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    toolsList.innerHTML = '<p>No tools found. Add your first tool above.</p>';
-                    return;
-                }
-                
-                snapshot.forEach(doc => {
-                    const tool = doc.data();
-                    const toolItem = document.createElement('div');
-                    toolItem.className = 'tool-item';
-                    toolItem.innerHTML = `
-                        <div class="tool-info">
-                            <h3>${tool.icon || '🔧'} ${tool.name}</h3>
-                            <p>${tool.url}</p>
-                        </div>
-                        <button class="delete-btn" onclick="deleteTool('${doc.id}')">Delete</button>
-                    `;
-                    toolsList.appendChild(toolItem);
-                });
-            });
+        // Show message
+        function showMessage(message, type = 'success') {
+            messageArea.innerHTML = `
+                <div class="message ${type}">
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
         }
 
-        // Add Tool
-        function addTool() {
-            const name = document.getElementById('toolName').value;
-            const url = document.getElementById('toolUrl').value;
-            const icon = document.getElementById('toolIcon').value;
+        // Form submission
+        toolForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-            if (!name || !url) {
-                showStatus('Please fill all fields!', 'error');
-                return;
-            }
+            const toolName = document.getElementById('toolName').value;
+            const toolUrl = document.getElementById('toolUrl').value;
+            const iconType = document.getElementById('iconType').value;
+            const toolIcon = document.getElementById('toolIcon').value;
+            const toolImage = document.getElementById('toolImage').value;
+            const toolDescription = document.getElementById('toolDescription').value;
 
-            db.collection('important_tools').add({
-                name: name,
-                url: url,
-                icon: icon || '🔧',
+            const toolData = {
+                name: toolName,
+                url: toolUrl,
+                description: toolDescription,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                document.getElementById('toolName').value = '';
-                document.getElementById('toolUrl').value = '';
-                document.getElementById('toolIcon').value = '';
-                showStatus('Tool added successfully!', 'success');
-            }).catch(error => {
-                showStatus('Error adding tool: ' + error.message, 'error');
-            });
+            };
+
+            // Add icon or image based on selection
+            if (iconType === 'image' && toolImage) {
+                toolData.imageUrl = toolImage;
+            } else {
+                toolData.icon = toolIcon || '🔧';
+            }
+
+            try {
+                if (editingToolId) {
+                    // Update existing tool
+                    await db.collection('important_tools').doc(editingToolId).update(toolData);
+                    showMessage('Tool updated successfully!');
+                } else {
+                    // Add new tool
+                    await db.collection('important_tools').add(toolData);
+                    showMessage('Tool added successfully!');
+                }
+
+                // Reset form
+                toolForm.reset();
+                editingToolId = null;
+                document.getElementById('submitBtn').textContent = 'Add Tool';
+                document.getElementById('formTitle').textContent = 'Add New Tool';
+                
+                // Refresh tools list
+                loadTools();
+            } catch (error) {
+                console.error('Error saving tool:', error);
+                showMessage('Error saving tool: ' + error.message, 'error');
+            }
+        });
+
+        // Load tools
+        function loadTools() {
+            db.collection('important_tools').orderBy('createdAt', 'desc').get()
+                .then(snapshot => {
+                    toolsGrid.innerHTML = '';
+
+                    if (snapshot.empty) {
+                        toolsGrid.innerHTML = `
+                            <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                                <p>No tools found. Add your first tool!</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    snapshot.forEach(doc => {
+                        const tool = doc.data();
+                        const toolId = doc.id;
+
+                        const toolCard = document.createElement('div');
+                        toolCard.className = 'tool-card';
+                        toolCard.innerHTML = `
+                            <div class="tool-preview">
+                                ${tool.imageUrl ? 
+                                    `<img src="${tool.imageUrl}" alt="${tool.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\\'icon\\'>🔧</span>'">` : 
+                                    `<span class="icon">${tool.icon || '🔧'}</span>`
+                                }
+                            </div>
+                            <div class="tool-info">
+                                <div class="tool-name">${tool.name}</div>
+                                <div class="tool-url">${tool.url}</div>
+                                ${tool.description ? `<div style="font-size: 0.8rem; opacity: 0.7; margin-top: 5px;">${tool.description}</div>` : ''}
+                            </div>
+                            <div class="tool-actions">
+                                <button class="edit-btn" onclick="editTool('${toolId}')">Edit</button>
+                                <button class="delete-btn" onclick="deleteTool('${toolId}')">Delete</button>
+                            </div>
+                        `;
+
+                        toolsGrid.appendChild(toolCard);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading tools:', error);
+                    showMessage('Error loading tools: ' + error.message, 'error');
+                });
         }
 
-        // Delete Tool
-        function deleteTool(id) {
+        // Edit tool
+        function editTool(toolId) {
+            db.collection('important_tools').doc(toolId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const tool = doc.data();
+                        
+                        document.getElementById('toolName').value = tool.name;
+                        document.getElementById('toolUrl').value = tool.url;
+                        document.getElementById('toolDescription').value = tool.description || '';
+
+                        if (tool.imageUrl) {
+                            document.getElementById('iconType').value = 'image';
+                            document.getElementById('toolImage').value = tool.imageUrl;
+                        } else {
+                            document.getElementById('iconType').value = 'icon';
+                            document.getElementById('toolIcon').value = tool.icon || '🔧';
+                        }
+
+                        toggleImageInput();
+                        
+                        editingToolId = toolId;
+                        document.getElementById('submitBtn').textContent = 'Update Tool';
+                        document.getElementById('formTitle').textContent = 'Edit Tool';
+
+                        // Scroll to form
+                        document.getElementById('formSection').scrollIntoView({ behavior: 'smooth' });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading tool:', error);
+                    showMessage('Error loading tool: ' + error.message, 'error');
+                });
+        }
+
+        // Delete tool
+        function deleteTool(toolId) {
             if (confirm('Are you sure you want to delete this tool?')) {
-                db.collection('important_tools').doc(id).delete()
+                db.collection('important_tools').doc(toolId).delete()
                     .then(() => {
-                        showStatus('Tool deleted successfully!', 'success');
+                        showMessage('Tool deleted successfully!');
+                        loadTools();
                     })
                     .catch(error => {
-                        showStatus('Error deleting tool: ' + error.message, 'error');
+                        console.error('Error deleting tool:', error);
+                        showMessage('Error deleting tool: ' + error.message, 'error');
                     });
             }
         }
 
-        // Show Status Message
-        function showStatus(message, type) {
-            statusMsg.textContent = message;
-            statusMsg.className = `status-msg ${type}`;
-            statusMsg.style.display = 'block';
-            
-            setTimeout(() => {
-                statusMsg.style.display = 'none';
-            }, 3000);
+        // Show add form
+        function showAddForm() {
+            toolForm.reset();
+            editingToolId = null;
+            document.getElementById('submitBtn').textContent = 'Add Tool';
+            document.getElementById('formTitle').textContent = 'Add New Tool';
+            document.getElementById('formSection').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Go Back
-        function goBack() {
-            window.location.href = "all-important-tools.html";
+        // Refresh tools
+        function refreshTools() {
+            loadTools();
+            showMessage('Tools list refreshed!');
         }
 
-        // Enter key support for login
-        passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
-            }
+        // Go to main page
+        function goToMain() {
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTools();
         });
     </script>
 </body>
