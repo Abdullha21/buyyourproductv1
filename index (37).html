@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Level Up Pass</title>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333; 
+            min-height: 100vh; 
+            padding: 20px;
+        }
+        
+        .admin-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #B300B3;
+        }
+        
+        .admin-header h1 {
+            font-size: 2.5rem;
+            color: #B300B3;
+            margin-bottom: 10px;
+        }
+        
+        .admin-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: #B300B3;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #B300B3;
+            box-shadow: 0 0 10px rgba(179, 0, 179, 0.2);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #B300B3, #8a2be2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, #9a009a, #7a1be1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(179, 0, 179, 0.3);
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #ff4d4d, #e60000);
+        }
+        
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #e60000, #cc0000);
+        }
+        
+        .products-list {
+            margin-top: 20px;
+        }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #B300B3;
+            transition: all 0.3s ease;
+        }
+        
+        .product-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .product-info {
+            flex: 1;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .product-link {
+            color: #666;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        .status-message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+        
+        .error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-container {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1>🎮 LEVEL UP PASS ADMIN</h1>
+            <p>Manage Your Level Up Pass Packages & Notices</p>
+        </div>
+
+        <!-- Add New Package Section -->
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-plus-circle"></i>
+                Add New Level Up Package
+            </h2>
+            
+            <div class="form-group">
+                <div class="form-row">
+                    <div>
+                        <label for="productName">
+                            <i class="fas fa-tag"></i> Package Name
+                        </label>
+                        <input type="text" id="productName" placeholder="Example: Level Up Package 6 level - 45 TK">
+                    </div>
+                    
+                    <div>
+                        <label for="paymentLink">
+                            <i class="fas fa-link"></i> Payment Link
+                        </label>
+                        <input type="text" id="paymentLink" placeholder="https://payment-link.com">
+                    </div>
+                    
+                    <div>
+                        <button class="btn" onclick="addProduct()">
+                            <i class="fas fa-plus"></i> Add Package
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Packages Section -->
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-list"></i>
+                Current Level Up Packages
+            </h2>
+            
+            <div class="products-list" id="productsList">
+                <!-- Packages will be loaded here -->
+                <div style="text-align: center; color: #666; padding: 30px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                    <p>Loading packages...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notice Board Section -->
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-bullhorn"></i>
+                Manage Notice Board
+            </h2>
+            
+            <div class="form-group">
+                <label for="noticeTitle">
+                    <i class="fas fa-heading"></i> Notice Title
+                </label>
+                <input type="text" id="noticeTitle" placeholder="Enter notice title">
+            </div>
+            
+            <div class="form-group">
+                <label for="noticeContent">
+                    <i class="fas fa-file-text"></i> Notice Content
+                </label>
+                <textarea id="noticeContent" rows="5" placeholder="Enter notice content for users..."></textarea>
+            </div>
+            
+            <button class="btn" onclick="updateNotice()">
+                <i class="fas fa-save"></i> Update Notice Board
+            </button>
+        </div>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7FtJirAx0PbmV7gXTnThTFkRZVP90KaM",
+            authDomain: "test-30208.firebaseapp.com",
+            projectId: "test-30208",
+            storageBucket: "test-30208.appspot.com",
+            messagingSenderId: "511922448499",
+            appId: "1:511922448499:web:c3d192dc7ded1256282206"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Load Products from Firebase
+        function loadProducts() {
+            db.collection('levelup_products').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+                const productsList = document.getElementById('productsList');
+                productsList.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    productsList.innerHTML = `
+                        <div style="text-align: center; color: #666; padding: 40px;">
+                            <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3>No Packages Found</h3>
+                            <p>Add your first Level Up package above!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    const productItem = document.createElement('div');
+                    productItem.className = 'product-item';
+                    productItem.innerHTML = `
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-link">${product.paymentLink}</div>
+                        </div>
+                        <button class="btn btn-delete" onclick="deleteProduct('${doc.id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    `;
+                    productsList.appendChild(productItem);
+                });
+            });
+        }
+
+        // Load Current Notice
+        function loadCurrentNotice() {
+            db.collection('levelup_notices').doc('current').get().then(doc => {
+                if (doc.exists) {
+                    const notice = doc.data();
+                    document.getElementById('noticeTitle').value = notice.title || '';
+                    document.getElementById('noticeContent').value = notice.content || '';
+                }
+            });
+        }
+
+        // Add New Product
+        function addProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const paymentLink = document.getElementById('paymentLink').value.trim();
+            
+            if (!name || !paymentLink) {
+                showStatus('❌ Please fill in all fields!', 'error');
+                return;
+            }
+            
+            db.collection('levelup_products').add({
+                name: name,
+                paymentLink: paymentLink,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('productName').value = '';
+                document.getElementById('paymentLink').value = '';
+                showStatus('✅ Package added successfully!', 'success');
+            }).catch(error => {
+                showStatus('❌ Error adding package: ' + error.message, 'error');
+            });
+        }
+
+        // Delete Product
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this Level Up package?')) {
+                db.collection('levelup_products').doc(id).delete()
+                    .then(() => {
+                        showStatus('✅ Package deleted successfully!', 'success');
+                    })
+                    .catch(error => {
+                        showStatus('❌ Error deleting package: ' + error.message, 'error');
+                    });
+            }
+        }
+
+        // Update Notice
+        function updateNotice() {
+            const title = document.getElementById('noticeTitle').value.trim();
+            const content = document.getElementById('noticeContent').value.trim();
+            
+            if (!title || !content) {
+                showStatus('❌ Please fill in all notice fields!', 'error');
+                return;
+            }
+            
+            db.collection('levelup_notices').doc('current').set({
+                title: title,
+                content: content,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                showStatus('✅ Notice updated successfully!', 'success');
+            }).catch(error => {
+                showStatus('❌ Error updating notice: ' + error.message, 'error');
+            });
+        }
+
+        // Show Status Message
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = `status-message ${type}`;
+            statusElement.style.display = 'block';
+            
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 4000);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            loadCurrentNotice();
+        });
+    </script>
+</body>
+</html>
