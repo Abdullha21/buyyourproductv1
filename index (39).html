@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CashSwap BD - এডমিন প্যানেল</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        :root {
+            --primary: #4a148c;
+            --secondary: #7b1fa2;
+            --accent: #00e676;
+            --dark: #121212;
+        }
+        
+        body {
+            background: var(--dark);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .admin-title {
+            font-size: 32px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 5px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .transaction-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .transaction-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .transaction-method {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .transaction-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending { background: #ff9800; color: black; }
+        .status-completed { background: var(--accent); color: black; }
+        .status-cancelled { background: #f44336; color: white; }
+        
+        .transaction-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-complete {
+            background: var(--accent);
+            color: black;
+        }
+        
+        .btn-cancel {
+            background: #f44336;
+            color: white;
+        }
+        
+        .settings-form {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .setting-group {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .setting-title {
+            font-size: 18px;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+        
+        .setting-item {
+            margin-bottom: 15px;
+        }
+        
+        .setting-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+        
+        .setting-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+        }
+        
+        .save-btn {
+            background: var(--accent);
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #ccc;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">
+                <i class="fas fa-user-shield"></i>
+                CashSwap BD - এডমিন প্যানেল
+            </h1>
+            <p class="admin-subtitle">সমস্ত লেনদেন এবং সেটিংস ম্যানেজমেন্ট</p>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="transactions">অর্ডার হিস্টরি</div>
+            <div class="tab" data-tab="settings">নাম্বার আপডেট</div>
+        </div>
+        
+        <div class="tab-content active" id="transactionsTab">
+            <h2 style="margin-bottom: 20px; color: var(--accent);">
+                <i class="fas fa-list"></i>
+                সাম্প্রতিক অর্ডার
+            </h2>
+            <div class="transaction-list" id="transactionList">
+                <div class="no-data">লোড হচ্ছে...</div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="settingsTab">
+            <h2 style="margin-bottom: 20px; color: var(--accent);">
+                <i class="fas fa-cog"></i>
+                নাম্বার আপডেট
+            </h2>
+            <div class="settings-form">
+                <div class="setting-group">
+                    <h3 class="setting-title">
+                        <i class="fas fa-mobile-alt"></i>
+                        পেমেন্ট নাম্বার
+                    </h3>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">বিকাশ নাম্বার</label>
+                        <input type="text" class="setting-input" id="bkashNumber" placeholder="০১৭১২-৩৪৫৬৭৮">
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">নগদ নাম্বার</label>
+                        <input type="text" class="setting-input" id="nagadNumber" placeholder="০১৮১২-৯৮৭৬৫৪">
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">রকেট নাম্বার</label>
+                        <input type="text" class="setting-input" id="rocketNumber" placeholder="০১৯১২-১২৩৪৫৬">
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">উপায় নাম্বার</label>
+                        <input type="text" class="setting-input" id="upayNumber" placeholder="০১৬১২-৭৮৯০১২">
+                    </div>
+                </div>
+                
+                <button class="save-btn" id="saveSettings">
+                    <i class="fas fa-save"></i>
+                    সেভ করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQwwOxIulYJsC2dwIJHESBOsCHHJzLWoQ",
+            authDomain: "swap-47f6e.firebaseapp.com",
+            projectId: "swap-47f6e",
+            storageBucket: "swap-47f6e.firebasestorage.app",
+            messagingSenderId: "71210907447",
+            appId: "1:71210907447:web:6ac329c6b76021a5720cb2"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let transactions = [];
+            
+            // Tab functionality
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab + 'Tab').classList.add('active');
+                });
+            });
+            
+            // Load transactions
+            function loadTransactions() {
+                db.collection('transactions')
+                    .orderBy('timestamp', 'desc')
+                    .onSnapshot((querySnapshot) => {
+                        transactions = [];
+                        
+                        if (querySnapshot.empty) {
+                            document.getElementById('transactionList').innerHTML = 
+                                '<div class="no-data">কোন অর্ডার নেই</div>';
+                            return;
+                        }
+                        
+                        querySnapshot.forEach((doc) => {
+                            const transaction = { id: doc.id, ...doc.data() };
+                            transactions.push(transaction);
+                        });
+                        
+                        renderTransactions();
+                    });
+            }
+            
+            function renderTransactions() {
+                const container = document.getElementById('transactionList');
+                
+                if (transactions.length === 0) {
+                    container.innerHTML = '<div class="no-data">কোন অর্ডার নেই</div>';
+                    return;
+                }
+                
+                container.innerHTML = transactions.map(transaction => {
+                    const date = transaction.timestamp ? 
+                        transaction.timestamp.toDate().toLocaleString('bn-BD') : 'N/A';
+                    
+                    return `
+                    <div class="transaction-item">
+                        <div class="transaction-header">
+                            <div class="transaction-method">
+                                ${transaction.fromMethod} → ${transaction.toMethod}
+                            </div>
+                            <div class="transaction-status status-${transaction.status || 'pending'}">
+                                ${transaction.status === 'completed' ? 'Completed' : 
+                                  transaction.status === 'cancelled' ? 'Cancelled' : 'Pending'}
+                            </div>
+                        </div>
+                        
+                        <div class="transaction-details">
+                            <div class="detail-item">
+                                <div class="detail-label">পরিমাণ</div>
+                                <div class="detail-value">৳ ${transaction.sendAmount}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">ইউজার নাম্বার</div>
+                                <div class="detail-value">${transaction.userNumber}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">ট্রানজেকশন আইডি</div>
+                                <div class="detail-value">${transaction.transactionIdInput}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">সময়</div>
+                                <div class="detail-value">${date}</div>
+                            </div>
+                        </div>
+                        
+                        ${transaction.status === 'pending' ? `
+                            <div class="action-buttons">
+                                <button class="btn btn-complete" onclick="updateTransactionStatus('${transaction.id}', 'completed')">
+                                    Complete
+                                </button>
+                                <button class="btn btn-cancel" onclick="updateTransactionStatus('${transaction.id}', 'cancelled')">
+                                    Cancel
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `}).join('');
+            }
+            
+            // Load settings
+            function loadSettings() {
+                db.collection('adminSettings').doc('paymentNumbers').get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('bkashNumber').value = data.bkash || '';
+                        document.getElementById('nagadNumber').value = data.nagad || '';
+                        document.getElementById('rocketNumber').value = data.rocket || '';
+                        document.getElementById('upayNumber').value = data.upay || '';
+                    }
+                });
+            }
+            
+            // Save settings
+            document.getElementById('saveSettings').addEventListener('click', function() {
+                const settings = {
+                    bkash: document.getElementById('bkashNumber').value,
+                    nagad: document.getElementById('nagadNumber').value,
+                    rocket: document.getElementById('rocketNumber').value,
+                    upay: document.getElementById('upayNumber').value,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                db.collection('adminSettings').doc('paymentNumbers').set(settings)
+                    .then(() => {
+                        alert('নাম্বার সফলভাবে আপডেট হয়েছে!');
+                    })
+                    .catch((error) => {
+                        alert('ত্রুটি: নাম্বার আপডেট করতে পারেনি।');
+                    });
+            });
+            
+            // Global function for status update
+            window.updateTransactionStatus = function(transactionId, status) {
+                db.collection('transactions').doc(transactionId).update({
+                    status: status,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    alert(`অর্ডার ${status} করা হয়েছে!`);
+                });
+            };
+            
+            // Initialize
+            loadTransactions();
+            loadSettings();
+        });
+    </script>
+</body>
+</html>
