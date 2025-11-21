@@ -295,91 +295,39 @@
     transform: translateY(-2px);
   }
 
-  /* Dashboard Grid */
-  .dashboard-grid {
+  /* Stats Section */
+  .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
   }
 
-  .dashboard-card {
+  .stat-card {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass);
-    border-radius: 16px;
-    padding: 2rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .dashboard-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-  }
-
-  .dashboard-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow);
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-
-  .card-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    font-size: 1.5rem;
-  }
-
-  .card-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--light);
-  }
-
-  .card-description {
-    color: var(--gray);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-  }
-
-  .card-link {
-    display: inline-flex;
-    align-items: center;
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 500;
+    padding: 1.5rem;
+    text-align: center;
     transition: all 0.3s ease;
   }
 
-  .card-link:hover {
-    color: var(--primary-dark);
-    transform: translateX(5px);
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   }
 
-  .card-link i {
-    margin-left: 0.5rem;
-    transition: transform 0.3s ease;
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
   }
 
-  .card-link:hover i {
-    transform: translateX(3px);
+  .stat-label {
+    color: var(--gray);
+    font-size: 0.9rem;
   }
 
   /* Button Management Section */
@@ -480,7 +428,7 @@
     transform: translateY(-2px);
   }
 
-  /* Buttons Grid */
+  /* Dynamic Buttons Grid */
   .buttons-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -549,41 +497,95 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s ease;
   }
 
-  /* Stats Section */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
+  .action-btn.edit {
+    background: rgba(59, 130, 246, 0.2);
+    color: #bfdbfe;
   }
 
-  .stat-card {
+  .action-btn.delete {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fecaca;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+  }
+
+  /* Quick Access Buttons (for main pages – ছোট বক্স সিস্টেম) */
+  .quick-actions {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
   }
 
-  .stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  }
-
-  .stat-number {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 0.5rem;
-  }
-
-  .stat-label {
+  .quick-subtitle {
     color: var(--gray);
     font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .quick-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .quick-btn {
+    background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(15,23,42,0.9));
+    border: 1px solid rgba(99,102,241,0.4);
+    border-radius: 14px;
+    padding: 1rem;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quick-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.6s ease;
+  }
+
+  .quick-btn:hover::before {
+    left: 100%;
+  }
+
+  .quick-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
+    border-color: var(--primary);
+  }
+
+  .quick-btn-icon {
+    font-size: 1.4rem;
+  }
+
+  .quick-btn-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--light);
+  }
+
+  .quick-btn-subtitle {
+    font-size: 0.75rem;
+    color: var(--gray);
   }
 
   /* Footer */
@@ -658,10 +660,6 @@
   @media (max-width: 768px) {
     .admin-header h1 {
       font-size: 2rem;
-    }
-    
-    .dashboard-grid {
-      grid-template-columns: 1fr;
     }
     
     .panel-header {
@@ -762,7 +760,7 @@
   <div class="stats-grid slide-up">
     <div class="stat-card">
       <div class="stat-number" id="totalButtons">0</div>
-      <div class="stat-label">Total Buttons</div>
+      <div class="stat-label">Total Custom Buttons</div>
     </div>
     <div class="stat-card">
       <div class="stat-number">100%</div>
@@ -774,9 +772,77 @@
     </div>
   </div>
 
-  <!-- Button Management Section -->
+  <!-- Quick Access (Main pages – ছোট ছোট বক্স, FF style vibe) -->
+  <div class="quick-actions slide-up">
+    <h3 class="section-title"><i class="fas fa-bolt"></i> Quick Access Pages</h3>
+    <p class="quick-subtitle">এক ক্লিকে আপনার সব গুরুত্বপূর্ণ পেজ ওপেন করুন। নিচের যেকোনো বক্সে ক্লিক করলেই ডানদিকে iframe-এ পেইজ ওপেন হবে।</p>
+
+    <div class="quick-buttons-grid">
+      <button class="quick-btn" onclick="openInIframe('Main Page', 'https://abdullha21.github.io/buyyourproductv1/index%20(27).html')">
+        <span class="quick-btn-icon">🏠</span>
+        <span class="quick-btn-title">Main Page</span>
+        <span class="quick-btn-subtitle">Landing / Home</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('Free Fire Top Up', 'https://abdullha21.github.io/buyyourproductv1/index%20(30).html')">
+        <span class="quick-btn-icon">🎮</span>
+        <span class="quick-btn-title">Free Fire Top Up</span>
+        <span class="quick-btn-subtitle">Diamond & UID System</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('Facebook Stars', 'https://abdullha21.github.io/buyyourproductv1/index%20(32).html')">
+        <span class="quick-btn-icon">📘</span>
+        <span class="quick-btn-title">Facebook Star</span>
+        <span class="quick-btn-subtitle">FB Stars Recharge</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('TON Network', 'https://abdullha21.github.io/buyyourproductv1/index%20(33).html')">
+        <span class="quick-btn-icon">🪙</span>
+        <span class="quick-btn-title">TON Network</span>
+        <span class="quick-btn-subtitle">TON Crypto Recharge</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('Telegram Stars', 'https://abdullha21.github.io/buyyourproductv1/index%20(34).html')">
+        <span class="quick-btn-icon">📨</span>
+        <span class="quick-btn-title">Telegram Star</span>
+        <span class="quick-btn-subtitle">Telegram Stars System</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('Crypto Fees', 'https://abdullha21.github.io/buyyourproductv1/index%20(35).html')">
+        <span class="quick-btn-icon">💰</span>
+        <span class="quick-btn-title">Crypto Fee Buy</span>
+        <span class="quick-btn-subtitle">Gas / Fee Buy System</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('All Tools', 'https://abdullha21.github.io/buyyourproductv1/index%20(36).html')">
+        <span class="quick-btn-icon">🧰</span>
+        <span class="quick-btn-title">All Tools</span>
+        <span class="quick-btn-subtitle">Extra Tools Panel</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('Level Up & Evo', 'https://abdullha21.github.io/buyyourproductv1/index%20(37).html')">
+        <span class="quick-btn-icon">📈</span>
+        <span class="quick-btn-title">Level Up & Evo</span>
+        <span class="quick-btn-subtitle">Pass & Evo Access</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('SWAP SYSTEM', 'https://abdullha21.github.io/buyyourproductv1/index%20(39).html')">
+        <span class="quick-btn-icon">🔄</span>
+        <span class="quick-btn-title">SWAP System</span>
+        <span class="quick-btn-subtitle">Swap / Convert Panel</span>
+      </button>
+
+      <button class="quick-btn" onclick="openInIframe('Invoice System', 'https://abdullha21.github.io/BUYYOURPRODUCT/index%20(13).html')">
+        <span class="quick-btn-icon">🧾</span>
+        <span class="quick-btn-title">Invoice System</span>
+        <span class="quick-btn-subtitle">Send / Manage Invoice</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Button Management Section (Custom Links) -->
   <div class="button-management slide-up">
-    <h3 class="section-title"><i class="fas fa-plus-circle"></i> Add New Button</h3>
+    <h3 class="section-title"><i class="fas fa-plus-circle"></i> Add New Custom Button</h3>
     
     <div class="form-grid">
       <div class="form-group">
@@ -816,152 +882,9 @@
     </button>
 
     <!-- Buttons Grid -->
-    <h3 class="section-title" style="margin-top: 2rem;"><i class="fas fa-th"></i> Manage Buttons</h3>
+    <h3 class="section-title" style="margin-top: 2rem;"><i class="fas fa-th"></i> Manage Custom Buttons</h3>
     <div class="buttons-grid" id="buttonsGrid">
       <!-- Buttons will be loaded here -->
-    </div>
-  </div>
-
-  <!-- Dashboard Grid -->
-  <div class="dashboard-grid">
-    <!-- Main Page -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fas fa-home"></i>
-        </div>
-        <h3 class="card-title">Main Page</h3>
-      </div>
-      <p class="card-description">Access and manage the main website landing page with all products and services.</p>
-      <a href="#" class="card-link" onclick="openInIframe('Main Page', 'https://abdullha21.github.io/buyyourproductv1/index%20(27).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-
-    <!-- Free Fire Top Up -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fas fa-gamepad"></i>
-        </div>
-        <h3 class="card-title">Free Fire Top Up</h3>
-      </div>
-      <p class="card-description">Manage Free Fire diamond top-ups and game currency recharges for users.</p>
-      <a href="#" class="card-link" onclick="openInIframe('Free Fire', 'https://abdullha21.github.io/buyyourproductv1/index%20(30).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-
-    <!-- Facebook Stars -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fab fa-facebook"></i>
-        </div>
-        <h3 class="card-title">Facebook Stars</h3>
-      </div>
-      <p class="card-description">Control Facebook Stars recharge system and manage payment integrations.</p>
-      <a href="#" class="card-link" onclick="openInIframe('Facebook Stars', 'https://abdullha21.github.io/buyyourproductv1/index%20(32).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-
-    <!-- TON Network -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fas fa-coins"></i>
-        </div>
-        <h3 class="card-title">TON Network</h3>
-      </div>
-      <p class="card-description">Manage TON cryptocurrency recharges and blockchain transactions.</p>
-      <a href="#" class="card-link" onclick="openInIframe('TON Network', 'https://abdullha21.github.io/buyyourproductv1/index%20(33).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-
-    <!-- Telegram Stars -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fab fa-telegram"></i>
-        </div>
-        <h3 class="card-title">Telegram Stars</h3>
-      </div>
-      <p class="card-description">Handle Telegram Stars recharges and channel monetization services.</p>
-      <a href="#" class="card-link" onclick="openInIframe('Telegram Stars', 'https://abdullha21.github.io/buyyourproductv1/index%20(34).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-
-    <!-- Crypto Fees -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fas fa-money-bill-wave"></i>
-        </div>
-        <h3 class="card-title">Crypto Fees Buy</h3>
-      </div>
-      <p class="card-description">Manage all cryptocurrency recharges and blockchain transactions.</p>
-      <a href="#" class="card-link" onclick="openInIframe('Crypto Fees', 'https://abdullha21.github.io/buyyourproductv1/index%20(35).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-
-    <!-- Tools Management -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fas fa-tools"></i>
-        </div>
-        <h3 class="card-title">All Tools</h3>
-      </div>
-      <p class="card-description">Manage all tools and utilities available on the platform.</p>
-      <a href="#" class="card-link" onclick="openInIframe('All Tools', 'https://abdullha21.github.io/buyyourproductv1/index%20(36).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-
-   <!-- level up pass Management -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fas fa-tools"></i>
-        </div>
-        <h3 class="card-title">level up pass & Evo access</h3>
-      </div>
-      <p class="card-description">Manage all tools and utilities available on the platform.</p>
-      <a href="#" class="card-link" onclick="openInIframe('All Tools', 'https://abdullha21.github.io/buyyourproductv1/index%20(37).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-
-    <!-- SWAP SYSTEM Management -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fas fa-tools"></i>
-        </div>
-        <h3 class="card-title">SWAP SYSTEM </h3>
-      </div>
-      <p class="card-description">Manage all tools and utilities available on the platform.</p>
-      <a href="#" class="card-link" onclick="openInIframe('All Tools', 'https://abdullha21.github.io/buyyourproductv1/index%20(39).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
-    </div>
-    
-    <!-- Invoice System -->
-    <div class="dashboard-card slide-up">
-      <div class="card-header">
-        <div class="card-icon">
-          <i class="fas fa-file-invoice"></i>
-        </div>
-        <h3 class="card-title">Invoice System</h3>
-      </div>
-      <p class="card-description">Send and manage customer invoices, payment confirmations, and receipts.</p>
-      <a href="#" class="card-link" onclick="openInIframe('Invoice System', 'https://abdullha21.github.io/BUYYOURPRODUCT/index%20(13).html')">
-        Open in Iframe <i class="fas fa-external-link-alt"></i>
-      </a>
     </div>
   </div>
 </section>
@@ -997,7 +920,7 @@
   const buttonsGrid = document.getElementById('buttonsGrid');
   const totalButtons = document.getElementById('totalButtons');
 
-  // Sample buttons data (in real app, this would come from Firebase)
+  // Sample buttons data (localStorage ব্যবহার হচ্ছে যাতে সহজে এড/ডিলিট থাকে)
   let buttons = JSON.parse(localStorage.getItem('admin_buttons')) || [
     { name: "Google", url: "https://google.com", icon: "🔍" },
     { name: "Facebook", url: "https://facebook.com", icon: "📘" },
@@ -1068,12 +991,16 @@
     buttons.forEach((button, index) => {
       const buttonElement = document.createElement('div');
       buttonElement.className = 'button-item';
+      const shortUrl = button.url.length > 22 ? button.url.substring(0, 22) + '...' : button.url;
       buttonElement.innerHTML = `
         <span class="button-icon">${button.icon}</span>
         <div class="button-name">${button.name}</div>
-        <div class="button-url">${button.url.substring(0, 20)}...</div>
+        <div class="button-url">${shortUrl}</div>
         <div class="button-actions">
-          <button class="action-btn btn-danger" onclick="deleteButton(${index})">
+          <button class="action-btn edit" onclick="editButton(${index}); event.stopPropagation();">
+            <i class="fas fa-pen"></i>
+          </button>
+          <button class="action-btn delete" onclick="deleteButton(${index}); event.stopPropagation();">
             <i class="fas fa-trash"></i>
           </button>
         </div>
@@ -1124,6 +1051,30 @@
     alert('Button added successfully!');
   }
 
+  // Edit Button (name + url + icon)
+  function editButton(index) {
+    const btn = buttons[index];
+    const newName = prompt('Edit button name:', btn.name);
+    if (newName === null) return;
+    const newUrl = prompt('Edit button URL:', btn.url);
+    if (newUrl === null) return;
+    const newIcon = prompt('Edit icon (emoji):', btn.icon) || btn.icon;
+
+    let finalUrl = newUrl.trim();
+    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+      finalUrl = 'https://' + finalUrl;
+    }
+
+    buttons[index] = {
+      name: newName.trim() || btn.name,
+      url: finalUrl || btn.url,
+      icon: newIcon
+    };
+
+    localStorage.setItem('admin_buttons', JSON.stringify(buttons));
+    loadButtons();
+  }
+
   // Delete Button
   function deleteButton(index) {
     if (confirm('Are you sure you want to delete this button?')) {
@@ -1161,6 +1112,7 @@
   // Make functions global
   window.openInIframe = openInIframe;
   window.deleteButton = deleteButton;
+  window.editButton = editButton;
 </script>
 
 </body>
