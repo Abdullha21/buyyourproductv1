@@ -515,7 +515,7 @@
     opacity: 0.9;
   }
 
-  /* Quick Access Buttons (for main pages – ছোট বক্স সিস্টেম) */
+  /* Quick Access Buttons */
   .quick-actions {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
@@ -597,65 +597,6 @@
     margin-top: 3rem;
   }
 
-  /* Iframe Modal */
-  .iframe-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-  }
-
-  .iframe-header {
-    background: var(--dark);
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--gray-dark);
-  }
-
-  .iframe-title {
-    color: var(--light);
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-
-  .iframe-close {
-    background: var(--danger);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-  }
-
-  .iframe-close:hover {
-    background: #dc2626;
-    transform: rotate(90deg);
-  }
-
-  .iframe-container {
-    width: 100%;
-    height: calc(100% - 73px);
-    background: white;
-  }
-
-  .iframe-container iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-
   /* Responsive */
   @media (max-width: 768px) {
     .admin-header h1 {
@@ -712,19 +653,6 @@
   <div class="bg-circle"></div>
 </div>
 
-<!-- Iframe Modal -->
-<div class="iframe-modal" id="iframeModal">
-  <div class="iframe-header">
-    <div class="iframe-title" id="iframeTitle">Loading...</div>
-    <button class="iframe-close" id="iframeClose">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
-  <div class="iframe-container">
-    <iframe id="mainIframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
-  </div>
-</div>
-
 <!-- Header -->
 <header class="admin-header">
   <h1>🚀 Admin Control Panel</h1>
@@ -772,67 +700,67 @@
     </div>
   </div>
 
-  <!-- Quick Access (Main pages – ছোট ছোট বক্স, FF style vibe) -->
+  <!-- Quick Access (Main pages – ছোট বক্স সিস্টেম) -->
   <div class="quick-actions slide-up">
     <h3 class="section-title"><i class="fas fa-bolt"></i> Quick Access Pages</h3>
-    <p class="quick-subtitle">এক ক্লিকে আপনার সব গুরুত্বপূর্ণ পেজ ওপেন করুন। নিচের যেকোনো বক্সে ক্লিক করলেই ডানদিকে iframe-এ পেইজ ওপেন হবে।</p>
+    <p class="quick-subtitle">এক ক্লিকে আপনার সব গুরুত্বপূর্ণ পেজ ওপেন করুন। নিচের যেকোনো বক্সে ক্লিক করলেই নতুন ট্যাবে পেইজ ওপেন হবে।</p>
 
     <div class="quick-buttons-grid">
-      <button class="quick-btn" onclick="openInIframe('Main Page', 'https://abdullha21.github.io/buyyourproductv1/index%20(27).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(27).html','_blank')">
         <span class="quick-btn-icon">🏠</span>
         <span class="quick-btn-title">Main Page</span>
         <span class="quick-btn-subtitle">Landing / Home</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('Free Fire Top Up', 'https://abdullha21.github.io/buyyourproductv1/index%20(30).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(30).html','_blank')">
         <span class="quick-btn-icon">🎮</span>
         <span class="quick-btn-title">Free Fire Top Up</span>
         <span class="quick-btn-subtitle">Diamond & UID System</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('Facebook Stars', 'https://abdullha21.github.io/buyyourproductv1/index%20(32).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(32).html','_blank')">
         <span class="quick-btn-icon">📘</span>
         <span class="quick-btn-title">Facebook Star</span>
         <span class="quick-btn-subtitle">FB Stars Recharge</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('TON Network', 'https://abdullha21.github.io/buyyourproductv1/index%20(33).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(33).html','_blank')">
         <span class="quick-btn-icon">🪙</span>
         <span class="quick-btn-title">TON Network</span>
         <span class="quick-btn-subtitle">TON Crypto Recharge</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('Telegram Stars', 'https://abdullha21.github.io/buyyourproductv1/index%20(34).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(34).html','_blank')">
         <span class="quick-btn-icon">📨</span>
         <span class="quick-btn-title">Telegram Star</span>
         <span class="quick-btn-subtitle">Telegram Stars System</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('Crypto Fees', 'https://abdullha21.github.io/buyyourproductv1/index%20(35).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(35).html','_blank')">
         <span class="quick-btn-icon">💰</span>
         <span class="quick-btn-title">Crypto Fee Buy</span>
         <span class="quick-btn-subtitle">Gas / Fee Buy System</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('All Tools', 'https://abdullha21.github.io/buyyourproductv1/index%20(36).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(36).html','_blank')">
         <span class="quick-btn-icon">🧰</span>
         <span class="quick-btn-title">All Tools</span>
         <span class="quick-btn-subtitle">Extra Tools Panel</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('Level Up & Evo', 'https://abdullha21.github.io/buyyourproductv1/index%20(37).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(37).html','_blank')">
         <span class="quick-btn-icon">📈</span>
         <span class="quick-btn-title">Level Up & Evo</span>
         <span class="quick-btn-subtitle">Pass & Evo Access</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('SWAP SYSTEM', 'https://abdullha21.github.io/buyyourproductv1/index%20(39).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/buyyourproductv1/index%20(39).html','_blank')">
         <span class="quick-btn-icon">🔄</span>
         <span class="quick-btn-title">SWAP System</span>
         <span class="quick-btn-subtitle">Swap / Convert Panel</span>
       </button>
 
-      <button class="quick-btn" onclick="openInIframe('Invoice System', 'https://abdullha21.github.io/BUYYOURPRODUCT/index%20(13).html')">
+      <button class="quick-btn" onclick="window.open('https://abdullha21.github.io/BUYYOURPRODUCT/index%20(13).html','_blank')">
         <span class="quick-btn-icon">🧾</span>
         <span class="quick-btn-title">Invoice System</span>
         <span class="quick-btn-subtitle">Send / Manage Invoice</span>
@@ -876,8 +804,8 @@
         </select>
       </div>
     </div>
-    
-    <button class="btn btn-success" id="addButton">
+
+      <button class="btn btn-success" id="addButton">
       <i class="fas fa-plus"></i> Add Button
     </button>
 
@@ -906,12 +834,6 @@
   const logoutButton = document.getElementById('logoutButton');
   const errorMessage = document.getElementById('errorMessage');
   
-  // Iframe Elements
-  const iframeModal = document.getElementById('iframeModal');
-  const iframeTitle = document.getElementById('iframeTitle');
-  const mainIframe = document.getElementById('mainIframe');
-  const iframeClose = document.getElementById('iframeClose');
-  
   // Button Management Elements
   const buttonName = document.getElementById('buttonName');
   const buttonUrl = document.getElementById('buttonUrl');
@@ -920,7 +842,7 @@
   const buttonsGrid = document.getElementById('buttonsGrid');
   const totalButtons = document.getElementById('totalButtons');
 
-  // Sample buttons data (localStorage ব্যবহার হচ্ছে যাতে সহজে এড/ডিলিট থাকে)
+  // Sample buttons data (localStorage ব্যবহার)
   let buttons = JSON.parse(localStorage.getItem('admin_buttons')) || [
     { name: "Google", url: "https://google.com", icon: "🔍" },
     { name: "Facebook", url: "https://facebook.com", icon: "📘" },
@@ -933,26 +855,21 @@
     const password = passwordInput.value.trim();
     
     if (password === ADMIN_PASSWORD) {
-      // Success
       loginSection.style.display = 'none';
       adminPanel.style.display = 'block';
       errorMessage.style.display = 'none';
       
-      // Load buttons
       loadButtons();
       
-      // Add animations
       document.querySelectorAll('.slide-up').forEach((el, index) => {
         el.style.animationDelay = `${index * 0.1}s`;
       });
       
     } else {
-      // Error
       errorMessage.style.display = 'block';
       passwordInput.value = '';
       passwordInput.focus();
       
-      // Shake animation
       loginSection.style.animation = 'none';
       setTimeout(() => {
         loginSection.style.animation = 'shake 0.5s ease';
@@ -966,21 +883,6 @@
     loginSection.style.display = 'block';
     passwordInput.value = '';
     passwordInput.focus();
-  }
-
-  // Open in Iframe Function
-  function openInIframe(title, url) {
-    iframeTitle.textContent = title;
-    mainIframe.src = url;
-    iframeModal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  }
-
-  // Close Iframe Function
-  function closeIframe() {
-    iframeModal.style.display = 'none';
-    mainIframe.src = '';
-    document.body.style.overflow = 'auto';
   }
 
   // Load Buttons
@@ -997,19 +899,17 @@
         <div class="button-name">${button.name}</div>
         <div class="button-url">${shortUrl}</div>
         <div class="button-actions">
-          <button class="action-btn edit" onclick="editButton(${index}); event.stopPropagation();">
+          <button class="action-btn edit" onclick="event.stopPropagation(); editButton(${index});">
             <i class="fas fa-pen"></i>
           </button>
-          <button class="action-btn delete" onclick="deleteButton(${index}); event.stopPropagation();">
+          <button class="action-btn delete" onclick="event.stopPropagation(); deleteButton(${index});">
             <i class="fas fa-trash"></i>
           </button>
         </div>
       `;
       
-      buttonElement.addEventListener('click', (e) => {
-        if (!e.target.closest('.button-actions')) {
-          openInIframe(button.name, button.url);
-        }
+      buttonElement.addEventListener('click', () => {
+        window.open(button.url, '_blank');
       });
       
       buttonsGrid.appendChild(buttonElement);
@@ -1027,7 +927,6 @@
       return;
     }
     
-    // Add http:// if missing
     let finalUrl = url;
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       finalUrl = 'https://' + url;
@@ -1043,7 +942,6 @@
     localStorage.setItem('admin_buttons', JSON.stringify(buttons));
     loadButtons();
     
-    // Reset form
     buttonName.value = '';
     buttonUrl.value = '';
     buttonIcon.value = '🔧';
@@ -1051,7 +949,7 @@
     alert('Button added successfully!');
   }
 
-  // Edit Button (name + url + icon)
+  // Edit Button
   function editButton(index) {
     const btn = buttons[index];
     const newName = prompt('Edit button name:', btn.name);
@@ -1088,14 +986,6 @@
   loginButton.addEventListener('click', login);
   logoutButton.addEventListener('click', logout);
   addButton.addEventListener('click', addNewButton);
-  iframeClose.addEventListener('click', closeIframe);
-
-  // Close iframe with Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeIframe();
-    }
-  });
 
   // Enter key support
   passwordInput.addEventListener('keypress', (e) => {
@@ -1110,7 +1000,6 @@
   });
 
   // Make functions global
-  window.openInIframe = openInIframe;
   window.deleteButton = deleteButton;
   window.editButton = editButton;
 </script>
