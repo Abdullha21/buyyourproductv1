@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Save Money Account</title>
+    
+    <!-- PWA মেটাডাটা -->
+    <meta name="theme-color" content="#00ff88">
+    <meta name="description" content="আপনার আয়-ব্যয় ট্র্যাক করুন ক্যালেন্ডারে, ডিজিটালি আপনার অর্থ সাশ্রয় করুন।">
+    <meta name="keywords" content="money, calendar, savings, finance, bangla">
+    
+    <!-- iOS PWA মেটাডাটা -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Money Calendar">
+    
+    <!-- PWA ম্যানিফেস্ট -->
+    <link rel="manifest" id="app-manifest">
+    
+    <!-- iOS আইকন -->
+    <link rel="apple-touch-icon" href="https://uploads.onecompiler.io/42weeh2u8/44afppfx3/1000029290.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Hind Siliguri',sans-serif; }
+        body { background:linear-gradient(135deg,#0a0f1a,#121a2e); color:#e0e0e0; min-height:100vh; padding:15px; line-height:1.6; }
+        .container { max-width:1000px; margin:0 auto; }
+        .card { background:rgba(26,30,46,0.92); padding:25px; border-radius:16px; box-shadow:0 10px 40px rgba(0,255,136,0.12); margin-bottom:20px; border:1px solid rgba(0,255,136,0.18); backdrop-filter:blur(6px); }
+        h1,h2,h3 { color:#00ff88; text-align:center; margin-bottom:20px; text-shadow:0 0 10px rgba(0,255,136,0.4); }
+        input,textarea,select,button { width:100%; padding:12px; margin:8px 0; border:none; border-radius:10px; background:#1e2535; color:white; font-size:16px; transition:all 0.3s ease; }
+        input:focus,textarea:focus,select:focus { outline:2px solid #00ff88; background:#252f44; box-shadow:0 0 15px rgba(0,255,136,0.3); }
+        button { background:linear-gradient(90deg,#00ff88,#00cc70); color:black; font-weight:bold; cursor:pointer; transition:all 0.3s; }
+        button:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,255,136,0.4); }
+        .logout-btn { background:linear-gradient(90deg,#ff4444,#cc0000); color:white; border:none; padding:12px 24px; border-radius:10px; cursor:pointer; font-weight:bold; transition:all 0.3s; }
+        .logout-btn:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(255,68,68,0.4); }
+        .hidden { display:none !important; }
+        
+        /* লগইন পেজ স্টাইল */
+        .auth-container { max-width:500px; margin:50px auto; }
+        .login-logo { text-align:center; margin-bottom:30px; }
+        .login-logo img { height:80px; width:auto; margin-bottom:15px; }
+        .login-logo h1 { color:#00ff88; font-size:1.8em; margin-top:10px; }
+        .auth-tabs { display:flex; margin-bottom:20px; border-bottom:2px solid #1e2535; }
+        .auth-tab { flex:1; padding:15px; text-align:center; cursor:pointer; background:none; border:none; color:#aaa; font-size:18px; font-weight:bold; transition:all 0.3s; }
+        .auth-tab.active { color:#00ff88; border-bottom:3px solid #00ff88; }
+        .auth-form { display:none; }
+        .auth-form.active { display:block; }
+        .button-group { display:flex; gap:15px; margin-top:20px; }
+        .button-group button { flex:1; }
+        
+        /* ইনস্টল নোটিফিকেশন */
+        .install-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26,30,46,0.98);
+            border: 2px solid #00ff88;
+            border-radius: 12px;
+            padding: 20px;
+            width: 320px;
+            z-index: 9999;
+            box-shadow: 0 10px 40px rgba(0,255,136,0.3);
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.5s ease;
+            display: none;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .install-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .install-icon {
+            font-size: 32px;
+        }
+        .install-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        /* অ্যাডভান্সড ফিচার */
+        .advanced-features { margin-top:30px; padding:20px; background:rgba(30,37,53,0.5); border-radius:12px; border-left:4px solid #00ff88; }
+        .feature-list { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:15px; margin-top:15px; }
+        .feature-item { background:rgba(26,30,46,0.7); padding:15px; border-radius:10px; border:1px solid rgba(0,255,136,0.1); transition:all 0.3s; }
+        .feature-item:hover { border-color:#00ff88; transform:translateY(-3px); }
+        .feature-icon { font-size:24px; margin-bottom:10px; }
+        
+        /* ক্যালেন্ডার স্টাইল (মোবাইল ফ্রেন্ডলি) */
+        #calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin:20px 0; }
+        .calendar-header { background:#1e2535; padding:12px; border-radius:10px; text-align:center; font-weight:bold; color:#00ff88; font-size:14px; }
+        .day { background:#1e2535; padding:6px 4px; border-radius:12px; text-align:center; cursor:pointer; min-height:70px; transition:all 0.4s ease; position:relative; overflow:hidden; border:2px solid transparent; }
+        .day:hover { transform:scale(1.04); border-color:#00ff88; box-shadow:0 0 20px rgba(0,255,136,0.3); }
+        .day.today { border:2px solid #00ff88; background:#142022; transform:scale(1.03); }
+        .day.has-data { background:linear-gradient(135deg,#003320,#002211); transform:scale(1.06); box-shadow:0 0 25px rgba(0,255,136,0.5); animation:pulseGlow 2.5s infinite; }
+        @keyframes pulseGlow { 0%{box-shadow:0 0 12px rgba(0,255,136,0.4);} 50%{box-shadow:0 0 30px rgba(0,255,136,0.8);} 100%{box-shadow:0 0 12px rgba(0,255,136,0.4);} }
+        .day-number { font-size:16px; font-weight:bold; margin-bottom:2px; color:#ffffff; }
+        .day-amount { font-size:11px; margin:1px 0; padding:1px 4px; border-radius:4px; background:rgba(0,0,0,0.4); }
+        .day-source { font-size:9px; color:#bbb; margin-top:2px; word-break:break-word; display:none; }
+        .month-nav { display:flex; justify-content:space-between; align-items:center; margin:20px 0; }
+        .month-nav button { width:50px; padding:10px; background:#1e2535; color:#00ff88; font-size:20px; border-radius:10px; }
+        .month-nav button:hover { background:#2a344a; }
+        .summary p { font-size:1.2em; margin:10px 0; padding:10px; background:#1e2535; border-radius:10px; }
+        .profit { font-size:1.6em !important; font-weight:bold; color:#00ff88 !important; background:#142022 !important; padding:15px !important; border-radius:12px; box-shadow:0 0 15px rgba(0,255,136,0.3); }
+        .loss { color:#ff4444 !important; background:#2a1a1a !important; }
+        .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.92); overflow:auto; }
+        .modal-content { background:#1a1e2e; margin:5% auto; padding:30px; width:90%; max-width:520px; border-radius:16px; border:2px solid #00ff88; box-shadow:0 0 40px rgba(0,255,136,0.25); }
+        .close { position:absolute; top:10px; right:20px; font-size:38px; cursor:pointer; color:#aaa; transition:0.3s; }
+        .close:hover { color:#ff4444; }
+        .delete-btn { background:linear-gradient(90deg,#ff4444,#cc0000); margin-top:15px; }
+        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; flex-wrap:nowrap; }
+        .logo-title { display:flex; align-items:center; gap:12px; }
+        .logo { font-size:36px; }
+        .app-name { font-size:1.7em; color:#00ff88; white-space:nowrap; }
+        .hamburger { font-size:36px; background:none; border:none; color:#00ff88; cursor:pointer; padding:6px 12px; border-radius:50%; transition:all 0.3s; margin-left:auto; }
+        .hamburger:hover { background:rgba(0,255,136,0.18); transform:scale(1.15); }
+        .side-menu { position:fixed; top:0; right:-320px; width:320px; height:100%; background:rgba(26,30,46,0.98); border-left:2px solid #00ff88; box-shadow:-12px 0 35px rgba(0,255,136,0.25); transition:right 0.4s ease; z-index:2000; padding:25px; color:#e0e0e0; backdrop-filter:blur(8px); overflow-y:auto; }
+        .side-menu.open { right:0 !important; }
+        .side-menu-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:35px; }
+        .side-menu-header h2 { margin:0; color:#00ff88; font-size:1.6em; }
+        .side-menu ul { list-style:none; padding:0; margin:0; }
+        .side-menu li { padding:18px 0; border-bottom:1px solid #2a344a; cursor:pointer; transition:all 0.3s; font-size:1.1em; display:flex; align-items:center; gap:10px; }
+        .side-menu li:hover { color:#00ff88; padding-left:15px; }
+        .side-menu .logout-section { position:absolute; bottom:40px; left:25px; right:25px; }
+        .overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:1500; display:none; }
+        .overlay.show { display:block; }
+        .developer-credit { position:fixed; bottom:0; left:0; right:0; background:rgba(26,30,46,0.95); color:#888; text-align:center; padding:12px; font-size:14px; border-top:1px solid #00ff88; z-index:999; backdrop-filter:blur(10px); }
+        .developer-credit a { color:#00ff88; text-decoration:none; font-weight:bold; transition:0.3s; }
+        .developer-credit a:hover { color:#ffffff; text-shadow:0 0 12px #00ff88; }
+        
+        @media (max-width:768px) { 
+            .hamburger { font-size:30px; } 
+            .side-menu { width:280px; padding:20px; } 
+            .app-name { font-size:1.4em; } 
+            .day { min-height:65px; padding:4px 2px; }
+            .day-number { font-size:14px; }
+            .day-amount { font-size:10px; }
+            .auth-tabs { flex-direction:column; }
+            .button-group { flex-direction:column; }
+            .feature-list { grid-template-columns:1fr; }
+            .install-notification {
+                width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+        }
+        @media (max-width:480px) {
+            .day { min-height:60px; }
+            .calendar-header { font-size:12px; padding:8px; }
+            #calendar { gap:6px; }
+            .card { padding:15px; }
+            .login-logo img { height:60px; }
+            .login-logo h1 { font-size:1.5em; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PWA ইনস্টল নোটিফিকেশন -->
+    <div id="installNotification" class="install-notification">
+        <div class="install-header">
+            <div class="install-icon">📱</div>
+            <div>
+                <h3 style="margin:0; color:#00ff88;">Money Calendar ইনস্টল করুন</h3>
+                <p style="margin:5px 0; font-size:14px;">হোমস্ক্রিনে অ্যাড করে অফলাইন ইউজ করুন</p>
+            </div>
+            <button onclick="closeInstallNotification()" style="background:none; border:none; color:#aaa; font-size:20px; cursor:pointer; margin-left:auto;">×</button>
+        </div>
+        <div class="install-buttons">
+            <button onclick="installApp()" style="background:linear-gradient(90deg,#00ff88,#00cc70);">ইনস্টল করুন</button>
+            <button onclick="closeInstallNotification()" style="background:#2a344a; color:#fff; margin-top:10px;">পরে করব</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeSideMenu()"></div>
+
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h2>মেনু</h2>
+            <span class="close" onclick="closeSideMenu()">×</span>
+        </div>
+        <ul>
+            <li onclick="openLastMonthReport()">📊 বিগত মাসের হিসাব</li>
+            <li onclick="toggleTheme()">🌙 থিম পরিবর্তন</li>
+            <li onclick="openExportPage()">📤 এক্সপোর্ট ডাটা</li>
+            <li><a href="https://t.me/abdullha2" target="_blank" style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:10px;"><span>💁</span>হেল্প অ্যান্ড সাপোর্ট</a></li>
+        </ul>
+        <div class="logout-section">
+            <button class="logout-btn" onclick="logout()" style="width:100%;">লগ আউট</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- লগইন/সাইনআপ সেকশন -->
+        <div id="loginSection" class="card auth-container">
+            <!-- লোগো -->
+            <div class="login-logo">
+                <img src="https://uploads.onecompiler.io/42weeh2u8/44afppfx3/1000029290.png" alt="Calendar Save Money Logo">
+                <h1>Calendar Save Money Account</h1>
+            </div>
+            
+            <!-- ট্যাব সিস্টেম -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showAuthForm('login')">লগইন</button>
+                <button class="auth-tab" onclick="showAuthForm('signup')">সাইনআপ</button>
+            </div>
+            
+            <!-- লগইন ফর্ম -->
+            <div id="loginForm" class="auth-form active">
+                <div class="error" id="loginError"></div>
+                <div class="success" id="loginSuccess"></div>
+                
+                <div class="form-group">
+                    <label for="loginEmail">ইমেইল</label>
+                    <input type="email" id="loginEmail" placeholder="আপনার ইমেইল ঠিকানা">
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">পাসওয়ার্ড</label>
+                    <input type="password" id="loginPassword" placeholder="আপনার পাসওয়ার্ড">
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="login()">লগইন</button>
+                    <button onclick="showAuthForm('signup')" style="background:#2a344a; color:#fff;">অ্যাকাউন্ট নেই?</button>
+                </div>
+            </div>
+            
+            <!-- সাইনআপ ফর্ম -->
+            <div id="signupForm" class="auth-form">
+                <div class="error" id="signupError"></div>
+                <div class="success" id="signupSuccess"></div>
+                
+                <div class="form-group">
+                    <label for="signupEmail">ইমেইল</label>
+                    <input type="email" id="signupEmail" placeholder="আপনার ইমেইল ঠিকানা">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signupPassword">পাসওয়ার্ড</label>
+                    <input type="password" id="signupPassword" placeholder="পাসওয়ার্ড (ন্যূনতম ৬ অক্ষর)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">পাসওয়ার্ড নিশ্চিত করুন</label>
+                    <input type="password" id="confirmPassword" placeholder="পুনরায় পাসওয়ার্ড দিন">
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="signup()">সাইনআপ</button>
+                    <button onclick="showAuthForm('login')" style="background:#2a344a; color:#fff;">ইতিমধ্যে অ্যাকাউন্ট আছে?</button>
+                </div>
+            </div>
+            
+            <!-- অ্যাডভান্সড ফিচার -->
+            <div class="advanced-features">
+                <h4>📱 অ্যাপের বিশেষ ফিচারসমূহ:</h4>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <strong>স্মার্ট লক্ষ্য নির্ধারণ</strong>
+                        <p>মাসিক সেভিংস টার্গেট সেট করুন</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <strong>ডিটেইলড রিপোর্ট</strong>
+                        <p>গ্রাফ ও চার্টে বিশ্লেষণ</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <strong>সিকিউর ডাটা</strong>
+                        <p>আপনার তথ্য সুরক্ষিত</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📅</div>
+                        <strong>ডেইলি ট্র্যাকিং</strong>
+                        <p>প্রতিদিনের আয়-ব্যয় মনিটর</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="loader" id="authLoader" style="display:none; text-align:center; margin:20px 0;">
+                <div style="color:#00ff88;">লোড হচ্ছে...</div>
+            </div>
+        </div>
+
+        <!-- মেইন অ্যাপ সেকশন -->
+        <div id="appSection" class="hidden">
+            <div class="header">
+                <div class="logo-title">
+                    <img src="https://uploads.onecompiler.io/42weeh2u8/44afppfx3/1000029290.png" alt="Logo" class="logo-img" style="height:50px; width:auto;">
+                    <span class="app-name">Calendar Save Money Account</span>
+                </div>
+                <button class="hamburger" onclick="openSideMenu()">☰</button>
+            </div>
+            
+            <div class="card">
+                <div class="month-nav">
+                    <button onclick="prevMonth()">←</button>
+                    <h2 id="monthYear"></h2>
+                    <button onclick="nextMonth()">→</button>
+                </div>
+                <div id="calendar"></div>
+            </div>
+            
+            <div class="summary card">
+                <h3>এই মাসের মোট হিসাব</h3>
+                <p>মোট ইনকাম: <span id="totalIncome">0.00</span> USDT</p>
+                <p>মোট খরচ: <span id="totalExpense">0.00</span> USDT</p>
+                <p>মোট ইনভেস্ট: <span id="totalInvest">0.00</span> USDT</p>
+                <p class="profit" id="profitLoss">লাভ/লস: 0.00 USDT</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <h3 id="modalDate"></h3>
+            <div class="error" id="modalError"></div>
+            
+            <div class="form-group">
+                <label for="income">ইনকাম (USDT)</label>
+                <input type="number" step="0.01" id="income" placeholder="ইনকামের পরিমাণ">
+            </div>
+            
+            <div class="form-group">
+                <label for="incomeSource">ইনকামের উৎস</label>
+                <input type="text" id="incomeSource" placeholder="কোথা থেকে? (Binance, Referral...)" list="incomeSources">
+            </div>
+            
+            <div class="form-group">
+                <label for="expense">খরচ (USDT)</label>
+                <input type="number" step="0.01" id="expense" placeholder="খরচের পরিমাণ">
+            </div>
+            
+            <div class="form-group">
+                <label for="expenseCategory">খরচের ধরণ</label>
+                <input type="text" id="expenseCategory" placeholder="কোথায় খরচ? (Food, Fee...)" list="expenseCategories">
+            </div>
+            
+            <div class="form-group">
+                <label for="invest">ইনভেস্ট (USDT)</label>
+                                <input type="number" step="0.01" id="invest" placeholder="ইনভেস্টের পরিমাণ">
+            </div>
+            
+            <div class="form-group">
+                <label for="investPlatform">ইনভেস্ট প্ল্যাটফর্ম</label>
+                <input type="text" id="investPlatform" placeholder="কোথায় ইনভেস্ট? (Staking, Futures...)" list="investPlatforms">
+            </div>
+            
+            <div class="form-group">
+                <label for="note">নোট</label>
+                <textarea id="note" rows="3" placeholder="যেকোনো বিশেষ নোট"></textarea>
+            </div>
+            
+            <button onclick="saveDay()">💾 ডেটা সেভ করুন</button>
+            <button class="delete-btn" id="deleteBtn" onclick="deleteDay()" style="display:none;">🗑️ ডেটা ডিলিট করুন</button>
+        </div>
+    </div>
+
+    <!-- Datalists -->
+    <datalist id="incomeSources">
+        <option value="Binance">
+        <option value="Bybit">
+        <option value="OKX">
+        <option value="Referral">
+        <option value="YouTube">
+        <option value="Telegram">
+        <option value="Airdrop">
+        <option value="Trading">
+        <option value="Staking">
+        <option value="Freelancing">
+    </datalist>
+    
+    <datalist id="expenseCategories">
+        <option value="Food">
+        <option value="Rent">
+        <option value="Ads">
+        <option value="Fee">
+        <option value="Withdrawal">
+        <option value="Gift">
+        <option value="Shopping">
+        <option value="Transport">
+        <option value="Bills">
+    </datalist>
+    
+    <datalist id="investPlatforms">
+        <option value="Staking">
+        <option value="Futures">
+        <option value="Spot">
+        <option value="Node">
+        <option value="Launchpad">
+        <option value="Liquidity Pool">
+        <option value="Savings">
+    </datalist>
+
+    <div class="developer-credit">
+        <span class="developer-logo">🚀</span>
+        <strong>Developed by</strong> 
+        <a href="https://t.me/abdullha2" target="_blank">Abdullah Khan</a>
+        <span class="version">v1.2.0</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOfdNrWquXTJE1t04P3BHqRa5iCI8jHK0",
+            authDomain: "calendar-888d2.firebaseapp.com",
+            projectId: "calendar-888d2",
+            storageBucket: "calendar-888d2.firebasestorage.app",
+            messagingSenderId: "778995585586",
+            appId: "1:778995585586:web:885962728d935d7c1da22b",
+            measurementId: "G-JHKNCR2WTS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentMonth = new Date();
+        let selectedDate = null;
+        let monthlyData = {};
+        let isLightTheme = false; // থিম স্টেট
+        
+        // PWA ইনস্টলেশন ভেরিয়েবল
+        let deferredPrompt;
+        let installNotificationShown = false;
+
+        // PWA ম্যানিফেস্ট সেটআপ
+        function setupPWA() {
+            const manifest = {
+                "name": "Money Calendar",
+                "short_name": "MoneyCal",
+                "description": "আপনার আয়-ব্যয় ট্র্যাক করুন ক্যালেন্ডারে",
+                "start_url": "/",
+                "display": "standalone",
+                "background_color": "#0a0f1a",
+                "theme_color": "#00ff88",
+                "icons": [
+                    {
+                        "src": "https://uploads.onecompiler.io/42weeh2u8/44afppfx3/1000029290.png",
+                        "sizes": "192x192",
+                        "type": "image/png"
+                    },
+                    {
+                        "src": "https://uploads.onecompiler.io/42weeh2u8/44afppfx3/1000029290.png",
+                        "sizes": "512x512",
+                        "type": "image/png"
+                    }
+                ]
+            };
+            
+            // ডাইনামিকভাবে ম্যানিফেস্ট সেট করুন
+            const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestURL = URL.createObjectURL(manifestBlob);
+            document.getElementById('app-manifest').href = manifestURL;
+        }
+
+        // PWA ইনস্টল ইভেন্ট ডিটেক্ট
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show install notification after 5 seconds
+            setTimeout(() => {
+                if (!installNotificationShown) {
+                    showInstallNotification();
+                }
+            }, 5000);
+        });
+
+        // ইনস্টল নোটিফিকেশন দেখানোর ফাংশন
+        function showInstallNotification() {
+            const notification = document.getElementById('installNotification');
+            if (notification && deferredPrompt && !installNotificationShown) {
+                notification.style.display = 'block';
+                installNotificationShown = true;
+            }
+        }
+
+        // নোটিফিকেশন বন্ধ করার ফাংশন
+        function closeInstallNotification() {
+            const notification = document.getElementById('installNotification');
+            if (notification) {
+                notification.style.display = 'none';
+            }
+        }
+
+        // অ্যাপ ইনস্টল করার ফাংশন
+        async function installApp() {
+            if (!deferredPrompt) {
+                alert("আপনার ব্রাউজার PWA সমর্থন করে না।");
+                return;
+            }
+            
+            // Show the install prompt
+            deferredPrompt.prompt();
+            
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+                alert("Money Calendar সফলভাবে ইনস্টল হয়েছে! হোমস্ক্রিনে চেক করুন।");
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+            
+            // Clear the saved prompt since it can't be used again
+            deferredPrompt = null;
+            closeInstallNotification();
+        }
+
+        // অ্যাপ ইতিমধ্যে ইনস্টল করা আছে কিনা চেক
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed successfully');
+            deferredPrompt = null;
+            closeInstallNotification();
+        });
+
+        // লগইন/সাইনআপ ট্যাব সিস্টেম
+        window.showAuthForm = (formType) => {
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            if (formType === 'login') {
+                document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+                // ফোকাস সেট
+                setTimeout(() => document.getElementById('loginEmail').focus(), 100);
+            } else {
+                document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+                document.getElementById('signupForm').classList.add('active');
+                // ফোকাস সেট
+                setTimeout(() => document.getElementById('signupEmail').focus(), 100);
+            }
+        };
+
+        // থিম টগল ফাংশন
+        window.toggleTheme = () => {
+            isLightTheme = !isLightTheme;
+            if (isLightTheme) {
+                document.body.style.background = "linear-gradient(135deg,#f5f5f5,#e8e8e8)";
+                document.body.style.color = "#333";
+                // থিম পরিবর্তনের নোটিফিকেশন
+                alert("থিম লাইট মোডে পরিবর্তন করা হয়েছে");
+            } else {
+                document.body.style.background = "linear-gradient(135deg,#0a0f1a,#121a2e)";
+                document.body.style.color = "#e0e0e0";
+                // থিম পরিবর্তনের নোটিফিকেশন
+                alert("থিম ডার্ক মোডে পরিবর্তন করা হয়েছে");
+            }
+            // মেনু বন্ধ করুন
+            closeSideMenu();
+            // লোকাল স্টোরেজে সেভ
+            localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('appSection').classList.remove('hidden');
+                loadAndRender();
+            } else {
+                currentUser = null;
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('appSection').classList.add('hidden');
+            }
+        });
+
+        function showLoader(id) { 
+            document.getElementById(id).style.display = 'block'; 
+        }
+        
+        function hideLoader(id) { 
+            document.getElementById(id).style.display = 'none'; 
+        }
+
+        function showMessage(type, id, message) {
+            const el = document.getElementById(id);
+            el.textContent = message;
+            el.style.color = type === 'error' ? '#ff4444' : '#00ff88';
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        window.login = async () => {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            if (!email || !password) {
+                return showMessage('error', 'loginError', 'ইমেইল এবং পাসওয়ার্ড দিন');
+            }
+            showLoader('authLoader');
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMessage('success', 'loginSuccess', 'লগইন সফল!');
+            } catch (error) {
+                let errorMsg = 'লগইন ব্যর্থ!';
+                if (error.code === 'auth/invalid-credential') errorMsg = 'ভুল ইমেইল বা পাসওয়ার্ড';
+                else if (error.code === 'auth/user-not-found') errorMsg = 'অ্যাকাউন্ট নেই';
+                showMessage('error', 'loginError', errorMsg);
+            } finally { 
+                hideLoader('authLoader'); 
+            }
+        };
+
+        window.signup = async () => {
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            
+            if (!email || !password || !confirmPassword) {
+                return showMessage('error', 'signupError', 'সকল ফিল্ড পূরণ করুন');
+            }
+            if (password.length < 6) {
+                return showMessage('error', 'signupError', 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে');
+            }
+            if (password !== confirmPassword) {
+                return showMessage('error', 'signupError', 'পাসওয়ার্ড মিলছে না');
+            }
+            
+            showLoader('authLoader');
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showMessage('success', 'signupSuccess', 'অ্যাকাউন্ট তৈরি সফল!');
+                // অটো লগইন করবে
+                setTimeout(() => {
+                    login(email, password);
+                }, 1500);
+            } catch (error) {
+                let errorMsg = 'সাইনআপ ব্যর্থ!';
+                if (error.code === 'auth/email-already-in-use') errorMsg = 'ইমেইল ইতিমধ্যে ব্যবহার中';
+                showMessage('error', 'signupError', errorMsg);
+            } finally { 
+                hideLoader('authLoader'); 
+            }
+        };
+
+        window.logout = async () => {
+            try {
+                await signOut(auth);
+                closeSideMenu();
+                showMessage('success', 'loginSuccess', 'লগআউট সফল!');
+            } catch (error) { 
+                console.error('Logout error:', error); 
+            }
+        };
+
+        const loadAndRender = async () => {
+            if (!currentUser) return;
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            document.getElementById('monthYear').textContent = currentMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
+            const start = new Date(year, month, 1);
+            const end = new Date(year, month + 1, 0, 23, 59, 59);
+            monthlyData = {};
+            try {
+                const q = query(collection(db, 'users', currentUser.uid, 'days'),
+                    where('timestamp', '>=', Timestamp.fromDate(start)),
+                    where('timestamp', '<=', Timestamp.fromDate(end)));
+                const snapshot = await getDocs(q);
+                snapshot.forEach(doc => monthlyData[doc.id] = doc.data());
+                renderCalendar();
+                updateSummary();
+            } catch (error) { 
+                console.error('Error loading data:', error); 
+            }
+        };
+
+        const renderCalendar = () => {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date().toISOString().slice(0, 10);
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            
+            ['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি'].forEach(d => {
+                const h = document.createElement('div');
+                h.className = 'calendar-header';
+                h.textContent = d;
+                calendar.appendChild(h);
+            });
+            
+            for (let i = 0; i < firstDay; i++) calendar.appendChild(document.createElement('div'));
+            
+            let ti=0, te=0, tiv=0;
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const data = monthlyData[dateStr] || {};
+                const el = document.createElement('div');
+                el.className = 'day';
+                const inc = data.income || 0;
+                const exp = data.expense || 0;
+                const inv = data.invest || 0;
+                ti += inc; te += exp; tiv += inv;
+                
+                let html = `<div class="day-number">${d}</div>`;
+                if (inc > 0) html += `<div class="day-amount" style="color:#00ff88;">+${inc.toFixed(2)}</div>`;
+                if (exp > 0) html += `<div class="day-amount" style="color:#ff4444;">-${exp.toFixed(2)}</div>`;
+                if (inv > 0) html += `<div class="day-amount" style="color:#ff9500;">${inv.toFixed(2)}</div>`;
+                
+                el.innerHTML = html;
+                if (dateStr === today) el.classList.add('today');
+                if (Object.keys(data).length > 0) el.classList.add('has-data');
+                el.onclick = () => openModal(dateStr);
+                calendar.appendChild(el);
+            }
+            
+            document.getElementById('totalIncome').textContent = ti.toFixed(2);
+            document.getElementById('totalExpense').textContent = te.toFixed(2);
+            document.getElementById('totalInvest').textContent = tiv.toFixed(2);
+            const tp = ti - te - tiv;
+            const pEl = document.getElementById('profitLoss');
+            pEl.textContent = `লাভ/লস: ${tp.toFixed(2)} USDT`;
+            pEl.className = tp >= 0 ? 'profit' : 'profit loss';
+        };
+
+        const updateSummary = () => {
+            let ti=0, te=0, tiv=0;
+            Object.values(monthlyData).forEach(d => {
+                ti += d.income || 0;
+                te += d.expense || 0;
+                tiv += d.invest || 0;
+            });
+            document.getElementById('totalIncome').textContent = ti.toFixed(2);
+            document.getElementById('totalExpense').textContent = te.toFixed(2);
+            document.getElementById('totalInvest').textContent = tiv.toFixed(2);
+            const tp = ti - te - tiv;
+            const pEl = document.getElementById('profitLoss');
+            pEl.textContent = `লাভ/লস: ${tp.toFixed(2)} USDT`;
+            pEl.className = tp >= 0 ? 'profit' : 'profit loss';
+        };
+
+        window.openModal = (date) => {
+            selectedDate = date;
+            const dt = new Date(date);
+            document.getElementById('modalDate').textContent = dt.toLocaleDateString('bn-BD', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+            const data = monthlyData[date] || {};
+            document.getElementById('income').value = data.income || '';
+            document.getElementById('incomeSource').value = data.incomeSource || '';
+            document.getElementById('expense').value = data.expense || '';
+            document.getElementById('expenseCategory').value = data.expenseCategory || '';
+            document.getElementById('invest').value = data.invest || '';
+            document.getElementById('investPlatform').value = data.investPlatform || '';
+            document.getElementById('note').value = data.note || '';
+            document.getElementById('deleteBtn').style.display = Object.keys(data).length > 0 ? 'block' : 'none';
+            document.getElementById('modal').style.display = 'block';
+        };
+
+        window.saveDay = async () => {
+            if (!currentUser) return;
+            const income = parseFloat(document.getElementById('income').value) || 0;
+            const expense = parseFloat(document.getElementById('expense').value) || 0;
+            const invest = parseFloat(document.getElementById('invest').value) || 0;
+            if (income === 0 && expense === 0 && invest === 0) {
+                return showMessage('error', 'modalError', 'কমপক্ষে একটি ফিল্ড পূরণ করুন');
+            }
+            const data = {
+                income,
+                incomeSource: document.getElementById('incomeSource').value.trim(),
+                expense,
+                expenseCategory: document.getElementById('expenseCategory').value.trim(),
+                invest,
+                investPlatform: document.getElementById('investPlatform').value.trim(),
+                note: document.getElementById('note').value.trim(),
+                timestamp: Timestamp.fromDate(new Date(selectedDate))
+            };
+            try {
+                await setDoc(doc(db, 'users', currentUser.uid, 'days', selectedDate), data);
+                monthlyData[selectedDate] = data;
+                closeModal();
+                renderCalendar();
+                updateSummary();
+            } catch (error) {
+                console.error('Error saving data:', error);
+                showMessage('error', 'modalError', 'ডেটা সেভ করতে সমস্যা হয়েছে');
+            }
+        };
+
+        window.deleteDay = async () => {
+            if (!currentUser || !confirm('আপনি কি নিশ্চিত যে আপনি এই দিনের ডেটা মুছে ফেলতে চান?')) return;
+            try {
+                await deleteDoc(doc(db, 'users', currentUser.uid, 'days', selectedDate));
+                delete monthlyData[selectedDate];
+                closeModal();
+                renderCalendar();
+                updateSummary();
+            } catch (error) {
+                console.error('Error deleting data:', error);
+                showMessage('error', 'modalError', 'ডেটা ডিলিট করতে সমস্যা হয়েছে');
+            }
+        };
+
+        window.closeModal = () => {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('modalError').style.display = 'none';
+        };
+
+        window.prevMonth = () => { 
+            currentMonth.setMonth(currentMonth.getMonth() - 1); 
+        };
+        
+        window.nextMonth = () => { 
+            currentMonth.setMonth(currentMonth.getMonth() + 1); 
+            loadAndRender(); 
+        };
+
+        // সাইড মেনু ফাংশন
+        function openSideMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('overlay');
+            if (menu && overlay) {
+                menu.classList.add('open');
+                overlay.classList.add('show');
+            }
+        }
+
+        function closeSideMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('overlay');
+            if (menu && overlay) {
+                menu.classList.remove('open');
+                overlay.classList.remove('show');
+            }
+        }
+
+        function openLastMonthReport() {
+            closeSideMenu();
+            window.open('last-month-report.html', '_blank');
+        }
+
+        function openExportPage() {
+            closeSideMenu();
+            window.open('export-data.html', '_blank');
+        }
+
+        // ইভেন্ট লিসেনার
+        document.addEventListener('DOMContentLoaded', () => {
+            // PWA সেটআপ
+            setupPWA();
+            
+            const hamburger = document.querySelector('.hamburger');
+            if (hamburger) {
+                hamburger.addEventListener('click', openSideMenu);
+            }
+
+            document.getElementById('overlay').addEventListener('click', closeSideMenu);
+
+            document.getElementById('monthYear').textContent = currentMonth.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
+            
+            // ইনপুট ফিল্ডে অটো ফোকাস
+            document.getElementById('loginEmail').focus();
+            
+            // থিম লোড
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                isLightTheme = true;
+                document.body.style.background = "linear-gradient(135deg,#f5f5f5,#e8e8e8)";
+                document.body.style.color = "#333";
+            }
+            
+            // PWA চেক (যদি ইতিমধ্যে ইনস্টল করা থাকে)
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Running in standalone mode (installed PWA)');
+                closeInstallNotification();
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSideMenu();
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
